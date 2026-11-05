@@ -14,7 +14,7 @@ services:
       - key: ADMIN_USUARIO
         value: admin
       - key: ADMIN_CLAVE
-        sync: false
+        value: thesun
       - key: GEMINI_API_KEY
         sync: false
       - key: GEMINI_MODELO

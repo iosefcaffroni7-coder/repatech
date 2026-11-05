@@ -20,7 +20,7 @@ const sesiones = new Set();
 router.post('/login', (req, res) => {
   const { usuario, clave } = req.body || {};
   const usuarioCorrecto = process.env.ADMIN_USUARIO || 'admin';
-  const claveCorrecta = process.env.ADMIN_CLAVE || 'repatech2026';
+  const claveCorrecta = process.env.ADMIN_CLAVE || 'thesun';
 
   if (usuario !== usuarioCorrecto || clave !== claveCorrecta) {
     return res.status(401).json({ error: 'Usuario o contraseña incorrectos.' });
