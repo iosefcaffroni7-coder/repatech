@@ -1,6 +1,6 @@
 # Configuración para publicar el backend gratis en Render (render.com).
 # En Render: New > Blueprint > elegir este repositorio. Render lee este archivo
-# y solo pide los valores secretos (contraseña del admin y clave de Gemini).
+# y solo pide los valores secretos (enlace de MongoDB y clave de Gemini).
 
 services:
   - type: web
@@ -11,6 +11,8 @@ services:
     startCommand: npm start
     plan: free
     envVars:
+      - key: MONGODB_URI
+        sync: false
       - key: ADMIN_USUARIO
         value: admin
       - key: ADMIN_CLAVE

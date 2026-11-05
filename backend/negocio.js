@@ -27,6 +27,13 @@ const NEGOCIO = {
     { nombre: 'Laura Gómez', especialidad: 'Celulares, PC y laptops', zona: 'Centro', experiencia: 10, calificacion: 4.8 }
   ],
 
+  // Reseñas de ejemplo que se guardan la primera vez que la base de datos está vacía.
+  resenasIniciales: [
+    { tecnico: 'Miguel Torres', nombre: 'Karina P.', calificacion: 5, comentario: 'Miguel llegó antes de lo prometido y me dejó el celular como nuevo, hasta me explicó qué le pasó.' },
+    { tecnico: 'Ana Ramírez', nombre: 'Roberto H.', calificacion: 5, comentario: 'Ana me salvó el portátil del trabajo el mismo día. Súper profesional y explica todo bien clarito.' },
+    { tecnico: 'David Cruz', nombre: 'Fernanda L.', calificacion: 4, comentario: 'David revisó mi consola en la sala de mi casa, tardó un poco más de lo esperado pero quedó perfecta.' }
+  ],
+
   // Misma fórmula que usa la calculadora de cobertura del frontend.
   cobertura: {
     kmMaximo: 15,
