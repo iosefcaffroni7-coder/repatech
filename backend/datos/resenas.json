@@ -1,0 +1,26 @@
+[
+  {
+    "id": "inicial-1",
+    "tecnico": "Miguel Torres",
+    "nombre": "Karina P.",
+    "comentario": "Miguel llegó antes de lo prometido y me dejó el celular como nuevo, hasta me explicó qué le pasó.",
+    "calificacion": 5,
+    "fecha": "2026-10-20T15:00:00.000Z"
+  },
+  {
+    "id": "inicial-2",
+    "tecnico": "Ana Ramírez",
+    "nombre": "Roberto H.",
+    "comentario": "Ana me salvó el portátil del trabajo el mismo día. Súper profesional y explica todo bien clarito.",
+    "calificacion": 5,
+    "fecha": "2026-10-18T15:00:00.000Z"
+  },
+  {
+    "id": "inicial-3",
+    "tecnico": "David Cruz",
+    "nombre": "Fernanda L.",
+    "comentario": "David revisó mi consola en la sala de mi casa, tardó un poco más de lo esperado pero quedó perfecta.",
+    "calificacion": 4,
+    "fecha": "2026-10-15T15:00:00.000Z"
+  }
+]

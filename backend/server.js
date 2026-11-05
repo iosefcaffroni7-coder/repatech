@@ -34,6 +34,10 @@ app.get('/api/salud', (req, res) => {
   res.json({ ok: true, mensaje: 'API de RepaTech funcionando' });
 });
 
+// Rutas de la API, cada una en su propio archivo.
+app.use('/api/solicitudes', require('./rutas/solicitudes'));
+app.use('/api/resenas', require('./rutas/resenas'));
+
 // Si se pide una ruta que no existe, se responde con un error claro.
 app.use((req, res) => {
   res.status(404).json({ error: 'Esa ruta no existe en la API' });
