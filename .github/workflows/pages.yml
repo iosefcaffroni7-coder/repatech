@@ -1,5 +1,5 @@
-# Publica automáticamente la carpeta "frontend" en GitHub Pages
-# cada vez que se hace push a la rama main.
+# Compila el frontend de React (npm run build) y publica la carpeta "dist"
+# en GitHub Pages cada vez que se hace push a la rama main.
 # Requisito (una sola vez): Settings > Pages > Source: "GitHub Actions".
 
 name: Publicar frontend en GitHub Pages
@@ -24,11 +24,21 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.despliegue.outputs.page_url }}
+    defaults:
+      run:
+        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Instalar dependencias
+        run: npm install
+      - name: Compilar con Vite
+        run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: frontend
+          path: frontend/dist
       - id: despliegue
         uses: actions/deploy-pages@v4
