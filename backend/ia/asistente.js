@@ -46,9 +46,11 @@ REGLAS:
 - Si preguntan algo que no tiene que ver con reparación de aparatos o con ${NEGOCIO.nombre}, responde amablemente que solo puedes ayudar con eso.`;
 }
 
-// Llama a Gemini con un historial de mensajes y devuelve el texto de respuesta.
-async function preguntarAGemini(contenidos) {
-  const modelo = process.env.GEMINI_MODELO || 'gemini-3.8-flash';
+// Modelo de respaldo, más liviano, por si el principal está saturado.
+const MODELO_RESPALDO = 'gemini-3.5-flash-lite';
+
+// Llama a un modelo de Gemini con un historial de mensajes y devuelve el texto.
+async function llamarModelo(modelo, contenidos) {
   const respuesta = await fetch(`${URL_GEMINI}/${modelo}:generateContent`, {
     method: 'POST',
     headers: {
@@ -60,20 +62,37 @@ async function preguntarAGemini(contenidos) {
       contents: contenidos,
       generationConfig: { temperature: 0.7 }
     }),
-    signal: AbortSignal.timeout(20000) // si tarda más de 20 s, se cancela
+    signal: AbortSignal.timeout(15000) // si tarda más de 15 s, se cancela
   });
 
   if (!respuesta.ok) {
-    throw new Error(`Gemini respondió ${respuesta.status}: ${await respuesta.text()}`);
+    throw new Error(`Gemini (${modelo}) respondió ${respuesta.status}: ${await respuesta.text()}`);
   }
 
   const datos = await respuesta.json();
   const texto = datos.candidates?.[0]?.content?.parts?.map(p => p.text).join('').trim();
-  if (!texto) throw new Error('Gemini devolvió una respuesta vacía');
+  if (!texto) throw new Error(`Gemini (${modelo}) devolvió una respuesta vacía`);
   return texto;
 }
 
-// Plan B sin IA: si no hay clave configurada, el chat igual responde algo útil
+// Prueba primero con el modelo principal y, si falla (por ejemplo
+// "mucha demanda"), con el de respaldo. Si los dos fallan, lanza el error
+// para que se use la respuesta sin IA.
+async function preguntarAGemini(contenidos) {
+  const modelos = [process.env.GEMINI_MODELO || 'gemini-3.8-flash', MODELO_RESPALDO];
+  let ultimoError;
+  for (const modelo of modelos) {
+    try {
+      return await llamarModelo(modelo, contenidos);
+    } catch (error) {
+      console.error('Error de IA:', error.message);
+      ultimoError = error;
+    }
+  }
+  throw ultimoError;
+}
+
+// Plan B sin IA: si no hay clave o la IA no responde, el chat igual responde algo útil
 // buscando palabras clave. Así la página nunca queda "muda" en una demostración.
 function respuestaSinIA(pregunta) {
   const p = pregunta.toLowerCase();
@@ -117,7 +136,12 @@ async function responderChat(historial) {
     parts: [{ text: m.texto }]
   }));
 
-  return preguntarAGemini(contenidos);
+  try {
+    return await preguntarAGemini(contenidos);
+  } catch {
+    // Si la IA no responde, el cliente igual recibe una respuesta útil.
+    return respuestaSinIA(ultimaPregunta);
+  }
 }
 
 async function redactarMensajeCliente(solicitud) {
@@ -128,15 +152,20 @@ Salúdalo por su nombre, confirma que recibimos su solicitud, recomienda al téc
 para ese aparato y pregúntale qué día y hora le queda bien. Firma como "Equipo RepaTech".
 Devuelve solo el mensaje, sin explicaciones.`;
 
-  if (!process.env.GEMINI_API_KEY) {
-    const tecnico = NEGOCIO.tecnicos.find(t => t.especialidad.toLowerCase().includes(solicitud.dispositivo.toLowerCase().split(' ')[0])) || NEGOCIO.tecnicos[0];
-    const aparato = solicitud.dispositivo.toLowerCase().replace('pc', 'PC').replace('tv', 'TV');
-    return `¡Hola ${solicitud.nombre}! Recibimos tu solicitud para reparar tu ${aparato}. ` +
-      `${tecnico.nombre} es quien mejor te puede ayudar con ese caso. ¿Qué día y a qué hora te queda bien la visita? ` +
-      `\n— Equipo RepaTech`;
-  }
+  // Mensaje de plantilla, por si no hay IA disponible.
+  const tecnico = NEGOCIO.tecnicos.find(t => t.especialidad.toLowerCase().includes(solicitud.dispositivo.toLowerCase().split(' ')[0])) || NEGOCIO.tecnicos[0];
+  const aparato = solicitud.dispositivo.toLowerCase().replace('pc', 'PC').replace('tv', 'TV');
+  const plantilla = `¡Hola ${solicitud.nombre}! Recibimos tu solicitud para reparar tu ${aparato}. ` +
+    `${tecnico.nombre} es quien mejor te puede ayudar con ese caso. ¿Qué día y a qué hora te queda bien la visita?` +
+    `\n— Equipo RepaTech`;
 
-  return preguntarAGemini([{ role: 'user', parts: [{ text: pedido }] }]);
+  if (!process.env.GEMINI_API_KEY) return plantilla;
+
+  try {
+    return await preguntarAGemini([{ role: 'user', parts: [{ text: pedido }] }]);
+  } catch {
+    return plantilla;
+  }
 }
 
 module.exports = { responderChat, redactarMensajeCliente };
