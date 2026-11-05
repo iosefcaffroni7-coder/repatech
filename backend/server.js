@@ -2,16 +2,29 @@
 // Aquí solo se configura Express y se conectan las rutas;
 // la lógica de cada funcionalidad vive en la carpeta /rutas.
 
-require('dotenv').config();
+// Carga las variables del archivo .env (claves secretas) si existe.
+// process.loadEnvFile viene incluido en Node 20.12+, así no instalamos "dotenv".
+try {
+  process.loadEnvFile();
+} catch {
+  // Sin archivo .env: se usan las variables del servidor (por ejemplo en Render).
+}
+
 const express = require('express');
-const cors = require('cors');
 
 const app = express();
 const PUERTO = process.env.PORT || 3000;
 
 // CORS: el frontend vive en GitHub Pages (otro dominio), por eso hay que
-// permitirle explícitamente que llame a esta API.
-app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
+// permitirle explícitamente que llame a esta API. Se hace a mano en vez de
+// instalar la librería "cors" porque son solo unas líneas.
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 
 // Permite leer el cuerpo de las peticiones en formato JSON.
 app.use(express.json());
