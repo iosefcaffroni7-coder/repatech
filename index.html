@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RepaTech - Reparación técnica a domicilio</title>
+<link rel="icon" type="image/svg+xml" href="imagenes/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="encabezado">
+  <div class="contenedor barra-nav">
+    <a href="#inicio" class="logo" data-vista="inicio">
+      <img src="imagenes/logo.svg" alt="Logo RepaTech" width="42">
+      <span>Repa<b>Tech</b></span>
+    </a>
+    <button class="boton-menu" id="botonMenu" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="navPrincipal">
+      <a href="#inicio" data-vista="inicio" class="activo">Inicio</a>
+      <a href="#servicios" data-vista="servicios">Servicios</a>
+      <a href="#tecnicos" data-vista="tecnicos">Técnicos</a>
+      <a href="#cobertura" data-vista="cobertura">Cobertura</a>
+      <a href="#resenas" data-vista="resenas">Reseñas</a>
+      <a href="#contacto" data-vista="contacto">Contacto</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section id="inicio" class="hero vista vista-activa vista-visible">
+    <div class="contenedor hero-caja">
+      <div class="hero-texto">
+        <span class="etiqueta-mano">¡se descompuso otra vez!</span>
+        <h1>Reparación técnica <span class="resaltado">a domicilio</span></h1>
+        <p>Mandamos a un técnico de confianza hasta la puerta de tu casa para arreglar tu celular, laptop, PC, tablet, consola o pantalla. Sin filas, sin dejar tu equipo tirado en un mostrador.</p>
+        <div class="hero-botones">
+          <a href="#tecnicos" class="boton boton-primario" data-vista="tecnicos">Ver técnicos disponibles</a>
+          <a href="#cobertura" class="boton boton-secundario" data-vista="cobertura">Checar cobertura</a>
+        </div>
+        <div class="hero-datos">
+          <div><strong>+1,200</strong><span>reparaciones hechas</span></div>
+          <div><strong>4.8★</strong><span>calificación promedio</span></div>
+          <div><strong>45 min</strong><span>tiempo de llegada aprox.</span></div>
+        </div>
+      </div>
+      <div class="hero-imagen">
+        <img src="imagenes/hero.svg" alt="Técnico llegando a reparar a una casa">
+      </div>
+    </div>
+  </section>
+
+  <section id="servicios" class="seccion vista">
+    <div class="contenedor">
+      <p class="pre-titulo">paso 1</p>
+      <h2>¿Qué aparato se te descompuso?</h2>
+      <p class="descripcion-seccion">Dale clic al aparato y te llevamos directo a los técnicos que saben arreglarlo.</p>
+
+      <div class="rejilla-servicios">
+        <button class="tarjeta-servicio" data-dispositivo="celular">
+          <img src="imagenes/celular.svg" alt="Celular">
+          <h3>Celulares</h3>
+          <p>Pantallas rotas, batería, no carga, se moja</p>
+        </button>
+        <button class="tarjeta-servicio" data-dispositivo="laptop">
+          <img src="imagenes/laptop.svg" alt="Laptop">
+          <h3>Laptops</h3>
+          <p>No enciende, se calienta, cambio de disco</p>
+        </button>
+        <button class="tarjeta-servicio" data-dispositivo="pc">
+          <img src="imagenes/pc.svg" alt="Computadora de escritorio">
+          <h3>PC de escritorio</h3>
+          <p>Formateo, virus, mantenimiento, upgrades</p>
+        </button>
+        <button class="tarjeta-servicio" data-dispositivo="tablet">
+          <img src="imagenes/tablet.svg" alt="Tablet">
+          <h3>Tablets</h3>
+          <p>Cristal roto, botones, actualización de software</p>
+        </button>
+        <button class="tarjeta-servicio" data-dispositivo="consola">
+          <img src="imagenes/consola.svg" alt="Consola de videojuegos">
+          <h3>Consolas</h3>
+          <p>Lector que no lee, joystick, sobrecalentamiento</p>
+        </button>
+        <button class="tarjeta-servicio" data-dispositivo="tv">
+          <img src="imagenes/tv.svg" alt="Televisión">
+          <h3>Pantallas y TV</h3>
+          <p>Sin imagen, líneas en pantalla, smart TV lento</p>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section id="tecnicos" class="seccion seccion-alterna vista">
+    <div class="contenedor">
+      <p class="pre-titulo">paso 2</p>
+      <h2>Elige a tu técnico</h2>
+      <p class="descripcion-seccion">Todos están verificados y tienen reseñas reales de otros clientes de la colonia.</p>
+
+      <div class="filtros" id="filtros">
+        <button class="chip activo" data-filtro="todos">Todos</button>
+        <button class="chip" data-filtro="celular">Celulares</button>
+        <button class="chip" data-filtro="laptop">Laptops</button>
+        <button class="chip" data-filtro="pc">PC</button>
+        <button class="chip" data-filtro="tablet">Tablets</button>
+        <button class="chip" data-filtro="consola">Consolas</button>
+        <button class="chip" data-filtro="tv">TV</button>
+      </div>
+
+      <div class="rejilla-tecnicos" id="rejillaTecnicos">
+        <article class="tarjeta-tecnico" data-dispositivos="celular tablet">
+          <img src="imagenes/tecnico1.svg" alt="Foto de Miguel Torres" class="avatar-tecnico">
+          <h3>Miguel Torres</h3>
+          <p class="especialidad">Celulares · Tablets</p>
+          <p class="estrellas">★★★★★ <span>4.9</span></p>
+          <p class="meta">6 años de experiencia · Zona Centro</p>
+          <p class="meta">32 reparaciones este mes</p>
+        </article>
+
+        <article class="tarjeta-tecnico" data-dispositivos="laptop pc">
+          <img src="imagenes/tecnico2.svg" alt="Foto de Ana Ramírez" class="avatar-tecnico">
+          <h3>Ana Ramírez</h3>
+          <p class="especialidad">Laptops · PC de escritorio</p>
+          <p class="estrellas">★★★★★ <span>5.0</span></p>
+          <p class="meta">8 años de experiencia · Zona Norte</p>
+          <p class="meta">41 reparaciones este mes</p>
+        </article>
+
+        <article class="tarjeta-tecnico" data-dispositivos="consola tv">
+          <img src="imagenes/tecnico3.svg" alt="Foto de David Cruz" class="avatar-tecnico">
+          <h3>David Cruz</h3>
+          <p class="especialidad">Consolas · Pantallas y TV</p>
+          <p class="estrellas">★★★★☆ <span>4.7</span></p>
+          <p class="meta">4 años de experiencia · Zona Sur</p>
+          <p class="meta">19 reparaciones este mes</p>
+        </article>
+
+        <article class="tarjeta-tecnico" data-dispositivos="celular pc laptop">
+          <img src="imagenes/tecnico4.svg" alt="Foto de Laura Gómez" class="avatar-tecnico">
+          <h3>Laura Gómez</h3>
+          <p class="especialidad">Celulares · PC · Laptops</p>
+          <p class="estrellas">★★★★★ <span>4.8</span></p>
+          <p class="meta">10 años de experiencia · Zona Centro</p>
+          <p class="meta">50 reparaciones este mes</p>
+        </article>
+      </div>
+      <p class="sin-resultados oculto" id="sinResultados">No tenemos técnicos para ese aparato todavía, prueba con otro filtro.</p>
+    </div>
+  </section>
+
+  <section id="cobertura" class="seccion vista">
+    <div class="contenedor cobertura-caja">
+      <div class="cobertura-texto">
+        <p class="pre-titulo">paso 3</p>
+        <h2>¿Llegamos hasta tu casa?</h2>
+        <p class="descripcion-seccion">Pon qué tan lejos estás de nuestro punto de partida (en km) y te decimos el tiempo y el costo del traslado.</p>
+
+        <form id="formCobertura" class="formulario-cobertura">
+          <label for="distancia">Distancia aproximada en km</label>
+          <input type="number" id="distancia" min="0" max="50" step="0.5" placeholder="Ej. 4.5" required>
+          <button type="submit" class="boton boton-primario">Calcular</button>
+        </form>
+
+        <div id="resultadoCobertura" class="resultado-cobertura oculto"></div>
+      </div>
+      <div class="cobertura-imagen">
+        <img src="imagenes/mapa.svg" alt="Mapa con radio de cobertura de RepaTech">
+      </div>
+    </div>
+  </section>
+
+  <section id="resenas" class="seccion seccion-alterna vista">
+    <div class="contenedor">
+      <p class="pre-titulo">paso 4</p>
+      <h2>Lo que dicen de nuestros técnicos</h2>
+      <p class="descripcion-seccion">Reseñas de gente real que ya recibió una visita.</p>
+
+      <div class="rejilla-resenas" id="rejillaResenas">
+        <article class="tarjeta-resena">
+          <p class="estrellas">★★★★★</p>
+          <p class="comentario">"Miguel llegó antes de lo prometido y me dejó el celular como nuevo, hasta me explicó qué le pasó."</p>
+          <p class="autor">— Karina P. sobre Miguel Torres</p>
+        </article>
+        <article class="tarjeta-resena">
+          <p class="estrellas">★★★★★</p>
+          <p class="comentario">"Ana me salvó la laptop del trabajo el mismo día. Súper profesional y explica todo bien clarito."</p>
+          <p class="autor">— Roberto H. sobre Ana Ramírez</p>
+        </article>
+        <article class="tarjeta-resena">
+          <p class="estrellas">★★★★☆</p>
+          <p class="comentario">"David revisó mi consola en la sala de mi casa, tardó un poco más de lo esperado pero quedó perfecta."</p>
+          <p class="autor">— Fernanda L. sobre David Cruz</p>
+        </article>
+      </div>
+
+      <div class="caja-nueva-resena">
+        <h3 class="titulo-mano">Deja tu propia reseña</h3>
+        <form id="formResena" class="formulario-resena">
+          <div class="campo">
+            <label for="tecnicoResena">Técnico</label>
+            <select id="tecnicoResena" required>
+              <option value="" disabled selected>Elige un técnico</option>
+              <option value="Miguel Torres">Miguel Torres</option>
+              <option value="Ana Ramírez">Ana Ramírez</option>
+              <option value="David Cruz">David Cruz</option>
+              <option value="Laura Gómez">Laura Gómez</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Calificación</label>
+            <div class="selector-estrellas" id="selectorEstrellas">
+              <button type="button" data-valor="1">★</button>
+              <button type="button" data-valor="2">★</button>
+              <button type="button" data-valor="3">★</button>
+              <button type="button" data-valor="4">★</button>
+              <button type="button" data-valor="5">★</button>
+            </div>
+          </div>
+          <div class="campo">
+            <label for="nombreResena">Tu nombre</label>
+            <input type="text" id="nombreResena" placeholder="Ej. Karina P." required>
+          </div>
+          <div class="campo campo-ancho">
+            <label for="comentarioResena">Comentario</label>
+            <textarea id="comentarioResena" rows="3" placeholder="Cuéntanos cómo te fue" required></textarea>
+          </div>
+          <button type="submit" class="boton boton-primario">Publicar reseña</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="contacto" class="seccion vista">
+    <div class="contenedor contacto-caja">
+      <div>
+        <p class="pre-titulo">paso 5</p>
+        <h2>Pide tu visita</h2>
+        <p class="descripcion-seccion">Llena el formulario y te contactamos para confirmar horario.</p>
+        <form id="formContacto" class="formulario-contacto">
+          <div class="campo">
+            <label for="nombreContacto">Nombre</label>
+            <input type="text" id="nombreContacto" required>
+          </div>
+          <div class="campo">
+            <label for="telefonoContacto">Teléfono</label>
+            <input type="tel" id="telefonoContacto" placeholder="10 dígitos" required>
+          </div>
+          <div class="campo">
+            <label for="direccionContacto">Colonia o dirección</label>
+            <input type="text" id="direccionContacto" required>
+          </div>
+          <div class="campo">
+            <label for="dispositivoContacto">Aparato a reparar</label>
+            <select id="dispositivoContacto" required>
+              <option value="" disabled selected>Elige uno</option>
+              <option value="Celular">Celular</option>
+              <option value="Laptop">Laptop</option>
+              <option value="PC de escritorio">PC de escritorio</option>
+              <option value="Tablet">Tablet</option>
+              <option value="Consola">Consola</option>
+              <option value="TV / Pantalla">TV / Pantalla</option>
+            </select>
+          </div>
+          <div class="campo campo-ancho">
+            <label for="mensajeContacto">Cuéntanos qué le pasa</label>
+            <textarea id="mensajeContacto" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="boton boton-primario">Solicitar visita</button>
+        </form>
+        <p id="mensajeConfirmacion" class="mensaje-confirmacion oculto">¡Listo! Recibimos tu solicitud, te marcamos en un ratito para confirmar.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="pie">
+  <div class="contenedor pie-caja">
+    <div>
+      <a href="#inicio" class="logo logo-pie" data-vista="inicio">
+        <img src="imagenes/logo.svg" alt="Logo RepaTech" width="32">
+        <span>Repa<b>Tech</b></span>
+      </a>
+      <p>Reparación técnica a domicilio, hecha por gente de tu zona.</p>
+    </div>
+    <div>
+      <h4>Horario</h4>
+      <p>Lunes a sábado, 9am - 7pm</p>
+      <p>Domingo, 10am - 2pm</p>
+    </div>
+    <div>
+      <h4>Contacto</h4>
+      <p>iosefcaffroni7@gmail.com</p>
+      <p>304 643 7285</p>
+    </div>
+  </div>
+  <p class="derechos">Hecho por (The_Sun) RepaTech © 2026</p>
+</footer>
+
+<script src="js/script.js"></script>
+</body>
+</html>

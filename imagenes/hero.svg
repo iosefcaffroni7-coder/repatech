@@ -1,0 +1,17 @@
+<svg viewBox="0 0 420 320" xmlns="http://www.w3.org/2000/svg">
+<rect x="20" y="150" width="200" height="140" fill="#FFF8E7" stroke="#2D3436" stroke-width="5"/>
+<polygon points="10,150 120,70 230,150" fill="#F4A300" stroke="#2D3436" stroke-width="5" stroke-linejoin="round"/>
+<rect x="95" y="200" width="50" height="90" fill="#1B998B" stroke="#2D3436" stroke-width="5"/>
+<rect x="165" y="185" width="35" height="35" fill="#BFE3DE" stroke="#2D3436" stroke-width="4"/>
+<rect x="45" y="185" width="35" height="35" fill="#BFE3DE" stroke="#2D3436" stroke-width="4"/>
+<circle cx="310" cy="150" r="34" fill="#F6C6B0" stroke="#2D3436" stroke-width="5"/>
+<rect x="278" y="182" width="64" height="80" rx="14" fill="#1B998B" stroke="#2D3436" stroke-width="5"/>
+<rect x="255" y="190" width="26" height="55" rx="10" fill="#F6C6B0" stroke="#2D3436" stroke-width="4"/>
+<rect x="339" y="190" width="26" height="55" rx="10" fill="#F6C6B0" stroke="#2D3436" stroke-width="4"/>
+<rect x="288" y="248" width="20" height="45" fill="#2D3436"/>
+<rect x="316" y="248" width="20" height="45" fill="#2D3436"/>
+<rect x="330" y="130" width="46" height="34" rx="4" fill="#F4A300" stroke="#2D3436" stroke-width="4"/>
+<line x1="353" y1="130" x2="353" y2="164" stroke="#2D3436" stroke-width="3"/>
+<path d="M298 118 Q310 95 322 118" fill="none" stroke="#2D3436" stroke-width="5" stroke-linecap="round"/>
+<circle cx="310" cy="115" r="5" fill="#2D3436"/>
+</svg>
