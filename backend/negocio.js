@@ -7,7 +7,7 @@ const NEGOCIO = {
   descripcion: 'Reparación técnica a domicilio: un técnico de confianza va hasta la casa del cliente.',
   whatsapp: '304 643 7285',
   correo: 'iosefcaffroni7@gmail.com',
-  horario: 'Lunes a sábado de 9am a 7pm, domingo de 10am a 2pm',
+  horario: 'de lunes a sábado de 9am a 7pm y los domingos de 10am a 2pm',
 
   dispositivos: ['Celular', 'Laptop', 'PC de escritorio', 'Tablet', 'Consola', 'TV / Pantalla'],
 
