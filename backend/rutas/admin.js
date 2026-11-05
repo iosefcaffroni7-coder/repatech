@@ -1,14 +1,17 @@
 // Rutas privadas del panel de administrador.
-// POST   /api/admin/login              -> recibe usuario y clave, devuelve un token
-// GET    /api/admin/solicitudes        -> lista de solicitudes de visita
-// PATCH  /api/admin/solicitudes/:id    -> cambia el estado (pendiente / atendida)
-// DELETE /api/admin/solicitudes/:id    -> borra una solicitud
-// DELETE /api/admin/resenas/:id        -> borra una reseña (por ejemplo, spam)
-// POST   /api/admin/solicitudes/:id/mensaje-ia -> la IA redacta un mensaje para el cliente
+// POST   /api/admin/login                      -> recibe usuario y clave, devuelve un token
+// POST   /api/admin/logout                     -> cierra la sesión
+// GET    /api/admin/solicitudes                -> lista de solicitudes de visita
+// PUT    /api/admin/solicitudes/:id            -> cambia el estado (pendiente / atendida)
+// DELETE /api/admin/solicitudes/:id            -> borra una solicitud
+// DELETE /api/admin/resenas/:id                -> borra una reseña (por ejemplo, spam)
+// POST   /api/admin/solicitudes/:id/mensaje-ia -> la IA redacta un WhatsApp para el cliente
 
 const express = require('express');
 const crypto = require('crypto');
-const db = require('../db');
+const Solicitud = require('../modelos/Solicitud');
+const Resena = require('../modelos/Resena');
+const { responderError } = require('./errores');
 const { redactarMensajeCliente } = require('../ia/asistente');
 
 const router = express.Router();
@@ -26,6 +29,7 @@ router.post('/login', (req, res) => {
     return res.status(401).json({ error: 'Usuario o contraseña incorrectos.' });
   }
 
+  // Un token es un texto aleatorio imposible de adivinar que funciona como "pase".
   const token = crypto.randomUUID();
   sesiones.add(token);
   res.json({ token });
@@ -38,59 +42,73 @@ function requiereAdmin(req, res, next) {
   if (!sesiones.has(token)) {
     return res.status(401).json({ error: 'Tu sesión expiró, vuelve a iniciar sesión.' });
   }
+  req.token = token;
   next();
 }
 
 router.use(requiereAdmin);
 
 router.post('/logout', (req, res) => {
-  sesiones.delete(req.headers.authorization.replace('Bearer ', ''));
+  sesiones.delete(req.token);
   res.json({ ok: true });
 });
 
-router.get('/solicitudes', (req, res) => {
-  res.json(db.leer('solicitudes'));
+router.get('/solicitudes', async (req, res) => {
+  try {
+    const solicitudes = await Solicitud.find().sort({ createdAt: -1 });
+    res.json(solicitudes);
+  } catch (error) {
+    responderError(res, error);
+  }
 });
 
-router.patch('/solicitudes/:id', (req, res) => {
-  const { estado } = req.body || {};
-  if (!['pendiente', 'atendida'].includes(estado)) {
-    return res.status(400).json({ error: 'El estado debe ser "pendiente" o "atendida".' });
+router.put('/solicitudes/:id', async (req, res) => {
+  try {
+    const solicitud = await Solicitud.findByIdAndUpdate(
+      req.params.id,
+      { estado: (req.body || {}).estado },
+      { new: true, runValidators: true } // devuelve la versión nueva y revisa las reglas del modelo
+    );
+    if (!solicitud) {
+      return res.status(404).json({ error: 'No se encontró esa solicitud.' });
+    }
+    res.json(solicitud);
+  } catch (error) {
+    responderError(res, error);
   }
-
-  const solicitudes = db.leer('solicitudes');
-  const solicitud = solicitudes.find(s => s.id === req.params.id);
-  if (!solicitud) {
-    return res.status(404).json({ error: 'No se encontró esa solicitud.' });
-  }
-
-  solicitud.estado = estado;
-  db.guardar('solicitudes', solicitudes);
-  res.json(solicitud);
 });
 
-router.delete('/solicitudes/:id', (req, res) => {
-  const solicitudes = db.leer('solicitudes');
-  const restantes = solicitudes.filter(s => s.id !== req.params.id);
-  if (restantes.length === solicitudes.length) {
-    return res.status(404).json({ error: 'No se encontró esa solicitud.' });
+router.delete('/solicitudes/:id', async (req, res) => {
+  try {
+    const borrada = await Solicitud.findByIdAndDelete(req.params.id);
+    if (!borrada) {
+      return res.status(404).json({ error: 'No se encontró esa solicitud.' });
+    }
+    res.json({ ok: true });
+  } catch (error) {
+    responderError(res, error);
   }
-  db.guardar('solicitudes', restantes);
-  res.json({ ok: true });
 });
 
-router.delete('/resenas/:id', (req, res) => {
-  const resenas = db.leer('resenas');
-  const restantes = resenas.filter(r => r.id !== req.params.id);
-  if (restantes.length === resenas.length) {
-    return res.status(404).json({ error: 'No se encontró esa reseña.' });
+router.delete('/resenas/:id', async (req, res) => {
+  try {
+    const borrada = await Resena.findByIdAndDelete(req.params.id);
+    if (!borrada) {
+      return res.status(404).json({ error: 'No se encontró esa reseña.' });
+    }
+    res.json({ ok: true });
+  } catch (error) {
+    responderError(res, error);
   }
-  db.guardar('resenas', restantes);
-  res.json({ ok: true });
 });
 
 router.post('/solicitudes/:id/mensaje-ia', async (req, res) => {
-  const solicitud = db.leer('solicitudes').find(s => s.id === req.params.id);
+  let solicitud;
+  try {
+    solicitud = await Solicitud.findById(req.params.id);
+  } catch (error) {
+    return responderError(res, error);
+  }
   if (!solicitud) {
     return res.status(404).json({ error: 'No se encontró esa solicitud.' });
   }
