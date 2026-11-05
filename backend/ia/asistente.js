@@ -48,7 +48,7 @@ REGLAS:
 
 // Llama a Gemini con un historial de mensajes y devuelve el texto de respuesta.
 async function preguntarAGemini(contenidos) {
-  const modelo = process.env.GEMINI_MODELO || 'gemini-2.5-flash';
+  const modelo = process.env.GEMINI_MODELO || 'gemini-3.8-flash';
   const respuesta = await fetch(`${URL_GEMINI}/${modelo}:generateContent`, {
     method: 'POST',
     headers: {
