@@ -131,25 +131,10 @@ a {
   background: var(--coral);
 }
 
+/* Cada vez que se cambia de sección, la nueva aparece con esta animación (ver App.jsx). */
 .vista {
-  display: none;
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.32s ease, transform 0.32s ease;
-}
-
-.vista.vista-activa {
-  display: block;
-}
-
-.vista.vista-activa.vista-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.vista.vista-saliendo {
-  opacity: 0;
-  transform: translateY(-18px);
+  min-height: 60vh;
+  animation: aparecer 0.35s ease;
 }
 
 .hero {
@@ -741,10 +726,6 @@ a {
   animation: aparecer 0.25s ease;
 }
 
-.chat-ventana[hidden] {
-  display: none;
-}
-
 .chat-cabecera {
   display: flex;
   justify-content: space-between;
@@ -983,4 +964,10 @@ a {
 
 .pie p a {
   text-decoration: underline;
+}
+
+.pie .logo-pie {
+  font-size: 1.3rem;
+  color: var(--crema);
+  margin-bottom: 10px;
 }
