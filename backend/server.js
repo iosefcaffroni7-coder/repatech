@@ -37,6 +37,8 @@ app.get('/api/salud', (req, res) => {
 // Rutas de la API, cada una en su propio archivo.
 app.use('/api/solicitudes', require('./rutas/solicitudes'));
 app.use('/api/resenas', require('./rutas/resenas'));
+app.use('/api/chat', require('./rutas/chat'));
+app.use('/api/admin', require('./rutas/admin'));
 
 // Si se pide una ruta que no existe, se responde con un error claro.
 app.use((req, res) => {
