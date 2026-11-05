@@ -4,8 +4,8 @@
 
 Proyecto final, Ruta Avanzada de Jóvenes creaTIvos: una aplicación web full stack publicada en internet y con inteligencia artificial personalizada para el negocio.
 
-- **Página publicada:** `https://TU-USUARIO.github.io/repatech/` *(cámbialo por tu enlace)*
-- **API publicada:** `https://repatech-api.onrender.com/api/salud` *(cámbialo por tu enlace)*
+- **Página publicada:** https://iosefcaffroni7-coder.github.io/repatech/
+- **API publicada:** https://repatech-api.onrender.com/api/salud *(si Render te da otra dirección, cámbiala aquí y en `frontend/js/config.js`)*
 
 ---
 
@@ -100,7 +100,7 @@ npm start                   # queda en http://localhost:3000
 # 2. Frontend: abre frontend/index.html con Live Server de VS Code
 ```
 
-Usuario del panel por defecto: `admin` / `repatech2026` (cámbialo en `.env`).
+Usuario del panel: `admin` / contraseña `thesun` (se puede cambiar en `.env` o en Render).
 Sin `GEMINI_API_KEY` el chatbot igual responde con respuestas básicas; con la clave responde con IA.
 
 ## 🚀 Cómo publicarlo
@@ -108,7 +108,7 @@ Sin `GEMINI_API_KEY` el chatbot igual responde con respuestas básicas; con la c
 **Backend en Render (gratis)**
 1. Entra a [render.com](https://render.com) con tu cuenta de GitHub.
 2. *New → Blueprint* → elige este repositorio. Render lee `render.yaml`.
-3. Escribe `ADMIN_CLAVE` y tu `GEMINI_API_KEY` ([sácala gratis aquí](https://aistudio.google.com/apikey)).
+3. Escribe tu `GEMINI_API_KEY` ([sácala gratis aquí](https://aistudio.google.com/apikey)).
 4. Copia la URL que te da Render y ponla en `frontend/js/config.js`.
 
 **Frontend en GitHub Pages**
@@ -133,4 +133,11 @@ Sin `GEMINI_API_KEY` el chatbot igual responde con respuestas básicas; con la c
 
 ---
 
-Hecho por **The_Sun** · RepaTech © 2026
+## 👤 Autor
+
+**Iosef (The_Sun)**
+- Correo: [iosefcaffroni7@gmail.com](mailto:iosefcaffroni7@gmail.com)
+- Celular / WhatsApp: [304 643 7285](https://wa.me/573046437285)
+- GitHub: [iosefcaffroni7-coder](https://github.com/iosefcaffroni7-coder)
+
+RepaTech © 2026

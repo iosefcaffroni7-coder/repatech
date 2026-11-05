@@ -7,7 +7,7 @@
     "start": "node server.js",
     "dev": "node --watch server.js"
   },
-  "author": "The_Sun",
+  "author": "Iosef (The_Sun) <iosefcaffroni7@gmail.com>",
   "license": "ISC",
   "type": "commonjs",
   "engines": {
