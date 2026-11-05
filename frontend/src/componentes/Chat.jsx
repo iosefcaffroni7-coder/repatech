@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { pedirAPI } from '../api.js'
 import logo from '../assets/logo.svg'
 
-const saludo = { rol: 'asistente', texto: '¡Hola! Soy Repi 🔧 Cuéntame qué aparato se te dañó y te digo qué técnico te puede ayudar.' }
+const saludo = { rol: 'asistente', texto: '¡Hola! Soy Repi. Cuéntame qué aparato se te dañó y te digo qué técnico te puede ayudar.' }
 const sugerencias = ['Se me mojó el celular', '¿Cuánto cobran el traslado?', '¿Quién arregla consolas?']
 
 function Chat() {
