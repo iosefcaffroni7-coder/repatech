@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RepaTech - Reparación técnica a domicilio</title>
+<meta name="description" content="Técnicos verificados que van hasta tu casa a reparar celulares, portátiles, PC, tablets, consolas y TV.">
 <link rel="icon" type="image/svg+xml" href="imagenes/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -17,7 +18,7 @@
       <img src="imagenes/logo.svg" alt="Logo RepaTech" width="42">
       <span>Repa<b>Tech</b></span>
     </a>
-    <button class="boton-menu" id="botonMenu" aria-label="Abrir menú">
+    <button class="boton-menu" id="botonMenu" aria-label="Abrir menú" aria-expanded="false">
       <span></span><span></span><span></span>
     </button>
     <nav class="nav" id="navPrincipal">
@@ -41,7 +42,7 @@
         <p>Mandamos a un técnico de confianza hasta la puerta de tu casa para arreglar tu celular, laptop, PC, tablet, consola o pantalla. Sin filas, sin dejar tu equipo tirado en un mostrador.</p>
         <div class="hero-botones">
           <a href="#tecnicos" class="boton boton-primario" data-vista="tecnicos">Ver técnicos disponibles</a>
-          <a href="#cobertura" class="boton boton-secundario" data-vista="cobertura">Checar cobertura</a>
+          <a href="#cobertura" class="boton boton-secundario" data-vista="cobertura">Revisar cobertura</a>
         </div>
         <div class="hero-datos">
           <div><strong>+1,200</strong><span>reparaciones hechas</span></div>
@@ -100,7 +101,7 @@
     <div class="contenedor">
       <p class="pre-titulo">paso 2</p>
       <h2>Elige a tu técnico</h2>
-      <p class="descripcion-seccion">Todos están verificados y tienen reseñas reales de otros clientes de la colonia.</p>
+      <p class="descripcion-seccion">Todos están verificados y tienen reseñas reales de otros clientes del barrio.</p>
 
       <div class="filtros" id="filtros">
         <button class="chip activo" data-filtro="todos">Todos</button>
@@ -180,23 +181,8 @@
       <h2>Lo que dicen de nuestros técnicos</h2>
       <p class="descripcion-seccion">Reseñas de gente real que ya recibió una visita.</p>
 
-      <div class="rejilla-resenas" id="rejillaResenas">
-        <article class="tarjeta-resena">
-          <p class="estrellas">★★★★★</p>
-          <p class="comentario">"Miguel llegó antes de lo prometido y me dejó el celular como nuevo, hasta me explicó qué le pasó."</p>
-          <p class="autor">— Karina P. sobre Miguel Torres</p>
-        </article>
-        <article class="tarjeta-resena">
-          <p class="estrellas">★★★★★</p>
-          <p class="comentario">"Ana me salvó la laptop del trabajo el mismo día. Súper profesional y explica todo bien clarito."</p>
-          <p class="autor">— Roberto H. sobre Ana Ramírez</p>
-        </article>
-        <article class="tarjeta-resena">
-          <p class="estrellas">★★★★☆</p>
-          <p class="comentario">"David revisó mi consola en la sala de mi casa, tardó un poco más de lo esperado pero quedó perfecta."</p>
-          <p class="autor">— Fernanda L. sobre David Cruz</p>
-        </article>
-      </div>
+      <!-- Las reseñas se cargan desde la API (ver cargarResenas en js/script.js) -->
+      <div class="rejilla-resenas" id="rejillaResenas" aria-live="polite"></div>
 
       <div class="caja-nueva-resena">
         <h3 class="titulo-mano">Deja tu propia reseña</h3>
@@ -214,23 +200,24 @@
           <div class="campo">
             <label>Calificación</label>
             <div class="selector-estrellas" id="selectorEstrellas">
-              <button type="button" data-valor="1">★</button>
-              <button type="button" data-valor="2">★</button>
-              <button type="button" data-valor="3">★</button>
-              <button type="button" data-valor="4">★</button>
-              <button type="button" data-valor="5">★</button>
+              <button type="button" data-valor="1" aria-label="1 estrella">★</button>
+              <button type="button" data-valor="2" aria-label="2 estrellas">★</button>
+              <button type="button" data-valor="3" aria-label="3 estrellas">★</button>
+              <button type="button" data-valor="4" aria-label="4 estrellas">★</button>
+              <button type="button" data-valor="5" aria-label="5 estrellas">★</button>
             </div>
           </div>
           <div class="campo">
             <label for="nombreResena">Tu nombre</label>
-            <input type="text" id="nombreResena" placeholder="Ej. Karina P." required>
+            <input type="text" id="nombreResena" placeholder="Ej. Karina P." minlength="2" maxlength="40" required>
           </div>
           <div class="campo campo-ancho">
             <label for="comentarioResena">Comentario</label>
-            <textarea id="comentarioResena" rows="3" placeholder="Cuéntanos cómo te fue" required></textarea>
+            <textarea id="comentarioResena" rows="3" placeholder="Cuéntanos cómo te fue" minlength="5" maxlength="300" required></textarea>
           </div>
           <button type="submit" class="boton boton-primario">Publicar reseña</button>
         </form>
+        <p id="avisoResena" class="aviso-formulario oculto" role="status"></p>
       </div>
     </div>
   </section>
@@ -240,19 +227,19 @@
       <div>
         <p class="pre-titulo">paso 5</p>
         <h2>Pide tu visita</h2>
-        <p class="descripcion-seccion">Llena el formulario y te contactamos para confirmar horario.</p>
+        <p class="descripcion-seccion">Llena el formulario y te contactamos para confirmar el horario. ¿Tienes dudas antes? Pregúntale a Repi, nuestro asistente, en la burbuja de abajo.</p>
         <form id="formContacto" class="formulario-contacto">
           <div class="campo">
             <label for="nombreContacto">Nombre</label>
-            <input type="text" id="nombreContacto" required>
+            <input type="text" id="nombreContacto" minlength="2" maxlength="60" autocomplete="name" required>
           </div>
           <div class="campo">
             <label for="telefonoContacto">Teléfono</label>
-            <input type="tel" id="telefonoContacto" placeholder="10 dígitos" required>
+            <input type="tel" id="telefonoContacto" placeholder="Ej. 3001234567" inputmode="numeric" autocomplete="tel" required>
           </div>
           <div class="campo">
-            <label for="direccionContacto">Colonia o dirección</label>
-            <input type="text" id="direccionContacto" required>
+            <label for="direccionContacto">Barrio o dirección</label>
+            <input type="text" id="direccionContacto" maxlength="120" autocomplete="street-address" required>
           </div>
           <div class="campo">
             <label for="dispositivoContacto">Aparato a reparar</label>
@@ -268,11 +255,11 @@
           </div>
           <div class="campo campo-ancho">
             <label for="mensajeContacto">Cuéntanos qué le pasa</label>
-            <textarea id="mensajeContacto" rows="3" required></textarea>
+            <textarea id="mensajeContacto" rows="3" minlength="5" maxlength="500" placeholder="Ej. Se me cayó y la pantalla quedó negra" required></textarea>
           </div>
           <button type="submit" class="boton boton-primario">Solicitar visita</button>
         </form>
-        <p id="mensajeConfirmacion" class="mensaje-confirmacion oculto">¡Listo! Recibimos tu solicitud, te marcamos en un ratito para confirmar.</p>
+        <p id="avisoContacto" class="aviso-formulario oculto" role="status"></p>
       </div>
     </div>
   </section>
@@ -299,9 +286,38 @@
       <p>304 643 7285</p>
     </div>
   </div>
-  <p class="derechos">Hecho por (The_Sun) RepaTech © 2026</p>
+  <p class="derechos">Hecho por (The_Sun) RepaTech © 2026 · <a href="admin.html" class="enlace-admin">Acceso administrador</a></p>
 </footer>
 
+<!-- Asistente con IA (chatbot). La lógica está en js/chat.js -->
+<button class="chat-burbuja" id="chatBurbuja" aria-label="Abrir asistente de RepaTech" aria-expanded="false">
+  <img src="imagenes/logo.svg" alt="" width="30">
+  <span>¿Te ayudo?</span>
+</button>
+<section class="chat-ventana" id="chatVentana" aria-label="Asistente de RepaTech" hidden>
+  <header class="chat-cabecera">
+    <div>
+      <strong>Repi</strong>
+      <span>Asistente con IA de RepaTech</span>
+    </div>
+    <button type="button" id="chatCerrar" aria-label="Cerrar asistente">✕</button>
+  </header>
+  <div class="chat-mensajes" id="chatMensajes" aria-live="polite"></div>
+  <div class="chat-sugerencias" id="chatSugerencias">
+    <button type="button">Se me mojó el celular</button>
+    <button type="button">¿Cuánto cobran el traslado?</button>
+    <button type="button">¿Quién arregla consolas?</button>
+  </div>
+  <form class="chat-formulario" id="chatFormulario">
+    <input type="text" id="chatEntrada" placeholder="Escribe tu pregunta..." maxlength="500" autocomplete="off" aria-label="Tu pregunta">
+    <button type="submit" class="boton boton-primario">Enviar</button>
+  </form>
+</section>
+
+<!-- Orden importante: config (URL de la API) -> api (funciones compartidas) -> lógica -->
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
 <script src="js/script.js"></script>
+<script src="js/chat.js"></script>
 </body>
 </html>
