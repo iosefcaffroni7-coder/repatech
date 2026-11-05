@@ -1,16 +1,21 @@
 {
-  "name": "repatech",
+  "name": "repatech-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "API de RepaTech: solicitudes de visita, reseñas, panel de administrador y asistente con IA",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
-  "keywords": [],
-  "author": "",
+  "author": "The_Sun",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^5.2.1"
   }
 }
