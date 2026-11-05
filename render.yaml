@@ -1,0 +1,21 @@
+# Configuración para publicar el backend gratis en Render (render.com).
+# En Render: New > Blueprint > elegir este repositorio. Render lee este archivo
+# y solo pide los valores secretos (contraseña del admin y clave de Gemini).
+
+services:
+  - type: web
+    name: repatech-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: ADMIN_USUARIO
+        value: admin
+      - key: ADMIN_CLAVE
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODELO
+        value: gemini-2.5-flash
