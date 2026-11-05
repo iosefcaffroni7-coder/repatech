@@ -81,7 +81,7 @@ function TarjetaSolicitud({ solicitud, pedirAPIAdmin, alActualizar, alBorrar }) 
         />
         <BotonCarga
           type="button" clase="boton-primario boton-chico" onClick={redactarConIA} cargando={redactando}
-          texto="✨ Redactar mensaje con IA" textoCargando="La IA está escribiendo..."
+          texto="Redactar mensaje con IA" textoCargando="La IA está escribiendo..."
         />
         <button type="button" className="boton boton-peligro boton-chico" onClick={borrar}>Borrar</button>
       </div>

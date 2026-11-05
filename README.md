@@ -1,4 +1,4 @@
-# RepaTech 🔧
+# RepaTech
 
 **Reparación técnica a domicilio.** RepaTech conecta a las personas con técnicos de confianza de su zona que van hasta su casa a arreglar celulares, portátiles, PC, tablets, consolas y televisores.
 
@@ -10,7 +10,7 @@ Proyecto final, Ruta Avanzada de Jóvenes creaTIvos: una aplicación web full st
 
 ---
 
-## 🛠️ Tecnologías (las mismas de los cursos)
+## Tecnologías (las mismas de los cursos)
 
 | Parte | Tecnología |
 |-------|------------|
@@ -20,7 +20,7 @@ Proyecto final, Ruta Avanzada de Jóvenes creaTIvos: una aplicación web full st
 | IA | **Google Gemini**, llamada desde el backend |
 | Publicación | GitHub Pages (frontend) y Render (backend) |
 
-## ✅ Entregables
+## Entregables
 
 | # | Entregable | Dónde está |
 |---|------------|------------|
@@ -32,7 +32,7 @@ Proyecto final, Ruta Avanzada de Jóvenes creaTIvos: una aplicación web full st
 | 06 | Admin con login | `Admin.jsx`: usuario y contraseña; ver, atender y borrar solicitudes y reseñas |
 | 07 | IA personalizada | Chatbot **Repi** (`Chat.jsx`), que conoce servicios, técnicos, cobertura y tono de marca, y un generador de mensajes de WhatsApp en el panel |
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 ```
  Navegador (GitHub Pages)            Servidor (Render)                    Nube
@@ -48,7 +48,7 @@ Proyecto final, Ruta Avanzada de Jóvenes creaTIvos: una aplicación web full st
 - El **backend** recibe las peticiones, guarda en MongoDB y es el único que tiene la clave de la IA.
 - La clave de Gemini y el enlace de MongoDB **nunca** llegan al navegador: viven en variables de entorno.
 
-## 📁 Estructura de carpetas
+## Estructura de carpetas
 
 ```
 repatech/
@@ -94,25 +94,25 @@ repatech/
 └── render.yaml                     → configuración para publicar el backend en Render
 ```
 
-## 🔌 API
+## API
 
-| Método | Ruta | Para qué | ¿Privada? |
+| Método | Ruta | Para qué | ¿Requiere login? |
 |--------|------|----------|-----------|
-| GET | `/api/salud` | Saber si el servidor está despierto | |
-| POST | `/api/solicitudes` | Guardar una solicitud de visita | |
-| GET | `/api/resenas` | Listar reseñas | |
-| POST | `/api/resenas` | Publicar una reseña | |
-| POST | `/api/chat` | Preguntarle al asistente Repi | |
-| POST | `/api/admin/login` | Iniciar sesión, devuelve un token | |
-| GET | `/api/admin/solicitudes` | Ver solicitudes | 🔒 |
-| PUT | `/api/admin/solicitudes/:id` | Marcar como pendiente o atendida | 🔒 |
-| DELETE | `/api/admin/solicitudes/:id` | Borrar una solicitud | 🔒 |
-| POST | `/api/admin/solicitudes/:id/mensaje-ia` | La IA redacta un WhatsApp para el cliente | 🔒 |
-| DELETE | `/api/admin/resenas/:id` | Borrar una reseña | 🔒 |
+| GET | `/api/salud` | Saber si el servidor está despierto | No |
+| POST | `/api/solicitudes` | Guardar una solicitud de visita | No |
+| GET | `/api/resenas` | Listar reseñas | No |
+| POST | `/api/resenas` | Publicar una reseña | No |
+| POST | `/api/chat` | Preguntarle al asistente Repi | No |
+| POST | `/api/admin/login` | Iniciar sesión, devuelve un token | No |
+| GET | `/api/admin/solicitudes` | Ver solicitudes | Sí |
+| PUT | `/api/admin/solicitudes/:id` | Marcar como pendiente o atendida | Sí |
+| DELETE | `/api/admin/solicitudes/:id` | Borrar una solicitud | Sí |
+| POST | `/api/admin/solicitudes/:id/mensaje-ia` | La IA redacta un WhatsApp para el cliente | Sí |
+| DELETE | `/api/admin/resenas/:id` | Borrar una reseña | Sí |
 
-Las rutas 🔒 necesitan el encabezado `Authorization: Bearer <token>`.
+Las rutas que requieren login necesitan el encabezado `Authorization: Bearer <token>`.
 
-## 💻 Cómo correrlo en tu computador
+## Cómo correrlo en tu computador
 
 Requisitos: [Node.js](https://nodejs.org) 20.12 o más nuevo y una base de datos gratis en [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register).
 
@@ -135,7 +135,7 @@ npm run dev                 # abre la dirección que muestra (http://localhost:5
 Usuario del panel: `admin` / contraseña `thesun`.
 Sin `GEMINI_API_KEY` el chatbot igual responde con respuestas básicas; con la clave responde con IA.
 
-## 🚀 Cómo publicarlo
+## Cómo publicarlo
 
 **Backend en Render (gratis)**
 1. Entra a [render.com](https://render.com) con tu cuenta de GitHub.
@@ -146,7 +146,7 @@ Sin `GEMINI_API_KEY` el chatbot igual responde con respuestas básicas; con la c
 1. En el repositorio: *Settings → Pages → Source: GitHub Actions*.
 2. Cada `git push` a `main` compila React y publica la página sola.
 
-## 🧠 Decisiones técnicas
+## Decisiones técnicas
 
 - **React + Vite:** la página está dividida en componentes pequeños que reciben datos por **props** (por ejemplo `TarjetaTecnico` sirve para cualquier técnico). El catálogo está en `datos.js` y se recorre con `.map()`.
 - **Una sección a la vez:** `App.jsx` guarda en el estado qué sección se ve; al cambiar, la nueva aparece con una animación CSS.
@@ -156,14 +156,14 @@ Sin `GEMINI_API_KEY` el chatbot igual responde con respuestas básicas; con la c
 - **IA personalizada:** `ia/asistente.js` le da a Gemini la información real del negocio (técnicos, servicios, fórmula de cobertura, horario) y el tono de marca. Si no hay clave, hay respuestas de respaldo para que la demo nunca falle.
 - **UX:** responsive en celular y computador, animaciones, botones con estado de carga (`BotonCarga`), mensajes de error claros (`Aviso`) y aviso si el servidor gratuito está "despertando".
 
-## ⚠️ Limitaciones y mejoras futuras
+## Limitaciones y mejoras futuras
 
 - El servidor gratuito de Render se "duerme" tras 15 minutos sin uso; la primera petición puede tardar unos 50 segundos.
 - Un solo usuario administrador; se podrían agregar más usuarios con contraseñas cifradas guardadas en MongoDB.
 
 ---
 
-## 👤 Autor
+## Autor
 
 **Iosef (The_Sun)**
 - Correo: [iosefcaffroni7@gmail.com](mailto:iosefcaffroni7@gmail.com)

@@ -1,7 +1,7 @@
 // Conexión con el backend (la API).
 // - En tu computador (localhost) usa el servidor local.
 // - Publicado en GitHub Pages usa el servidor en Render.
-//   ⚠️ Si Render te da otra dirección, cámbiala aquí.
+//   IMPORTANTE: si Render te da otra dirección, cámbiala aquí.
 const enMiComputador = ['localhost', '127.0.0.1'].includes(window.location.hostname)
 export const API_URL = enMiComputador ? 'http://localhost:3000' : 'https://repatech-api.onrender.com'
 

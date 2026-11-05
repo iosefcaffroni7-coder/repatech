@@ -23,7 +23,7 @@ function instruccionesDelNegocio() {
   return `Eres "Repi", el asistente virtual de ${NEGOCIO.nombre}. ${NEGOCIO.descripcion}
 
 TONO DE MARCA: cercano, alegre y claro, como un vecino que sabe de tecnología. Tuteas al cliente,
-usas español de Colombia, frases cortas y máximo un emoji por respuesta. Respondes en 2 a 4 frases.
+usas español de Colombia, frases cortas y sin emojis. Respondes en 2 a 4 frases.
 
 SERVICIOS (lo que reparamos):
 ${servicios}
@@ -99,13 +99,13 @@ function respuestaSinIA(pregunta) {
   const tecnicoPara = palabra => NEGOCIO.tecnicos.find(t => t.especialidad.toLowerCase().includes(palabra));
 
   if (/celular|teléfono|telefono|iphone|android/.test(p)) {
-    return `Para celulares te recomiendo a ${tecnicoPara('celulares').nombre}, es nuestro experto 📱. Llena el formulario "Pide tu visita" y te llamamos para confirmar la hora.`;
+    return `Para celulares te recomiendo a ${tecnicoPara('celulares').nombre}, es nuestro experto. Llena el formulario "Pide tu visita" y te llamamos para confirmar la hora.`;
   }
   if (/laptop|portátil|portatil|computador|pc/.test(p)) {
     return `Para computadores te recomiendo a ${tecnicoPara('laptops').nombre}. Cuéntanos la falla en el formulario "Pide tu visita" y te contactamos.`;
   }
   if (/consola|play|xbox|nintendo|tv|televisor|pantalla/.test(p)) {
-    return `Para consolas y pantallas el indicado es ${tecnicoPara('consolas').nombre} 🎮. Pide tu visita en el formulario y te llamamos.`;
+    return `Para consolas y pantallas el indicado es ${tecnicoPara('consolas').nombre}. Pide tu visita en el formulario y te llamamos.`;
   }
   if (/precio|cuesta|cobran|valor|cuánto|cuanto/.test(p)) {
     return `El traslado es gratis hasta ${NEGOCIO.cobertura.kmGratis} km. El precio de la reparación te lo da el técnico después de revisar tu aparato, sin compromiso.`;
@@ -113,7 +113,7 @@ function respuestaSinIA(pregunta) {
   if (/horario|hora|abren|domingo/.test(p)) {
     return `Atendemos ${NEGOCIO.horario}.`;
   }
-  return `Soy Repi, el asistente de RepaTech 🔧. Cuéntame qué aparato se te dañó y qué le pasa, y te digo qué técnico te puede ayudar.`;
+  return `Soy Repi, el asistente de RepaTech. Cuéntame qué aparato se te dañó y qué le pasa, y te digo qué técnico te puede ayudar.`;
 }
 
 // historial: [{ rol: 'usuario' | 'asistente', texto: '...' }, ...]
