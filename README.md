@@ -8,6 +8,15 @@ Proyecto final, Ruta Avanzada de Jóvenes creaTIvos: una aplicación web full st
 - **Panel de administrador:** https://iosefcaffroni7-coder.github.io/repatech/#admin
 - **API publicada:** https://repatech-api.onrender.com/api/salud *(si Render te da otra dirección, cámbiala aquí y en `frontend/src/api.js`)*
 
+### Cómo probarlo en un minuto
+
+1. Abre la página y recorre los pasos: Servicios, Técnicos, Cobertura, Reseñas y Contacto.
+2. Pregúntale algo a Repi en la burbuja de la esquina (por ejemplo: "se me mojó el celular").
+3. Envía una solicitud en "Pide tu visita".
+4. Entra al panel (`/#admin`), búscala, márcala como atendida y prueba "Redactar mensaje con IA".
+
+> La primera carga puede tardar unos 50 segundos si el servidor gratuito estaba dormido.
+
 ---
 
 ## Tecnologías (las mismas de los cursos)
