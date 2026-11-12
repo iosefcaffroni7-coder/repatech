@@ -433,6 +433,63 @@ a {
 
 .cobertura-imagen {
   flex: 1 1 300px;
+  position: relative;
+}
+
+/* Etiquetas sobre el mapa (muestran los km guardados en la base de datos) */
+.pildora-mapa {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: clamp(0.72rem, 1.6vw, 0.95rem);
+  white-space: nowrap;
+  padding: 2px 12px;
+  border: 3px solid var(--carbon);
+  border-radius: 20px;
+}
+
+.pildora-maximo {
+  left: 50%;
+  top: 8.5%;
+  background: var(--mostaza);
+}
+
+.pildora-gratis {
+  left: 28.5%;
+  top: 58.5%;
+  background: var(--teal-claro);
+}
+
+.aviso-descuento {
+  display: inline-block;
+  background: var(--coral);
+  color: var(--crema);
+  border: 3px solid var(--carbon);
+  border-radius: 12px;
+  padding: 8px 16px;
+  margin-bottom: 18px;
+  box-shadow: 4px 4px 0 var(--carbon);
+}
+
+.cinta-descuento {
+  display: block;
+  width: fit-content;
+  background: var(--coral);
+  color: var(--crema);
+  border: 3px solid var(--carbon);
+  border-radius: 30px;
+  padding: 6px 16px;
+  margin-bottom: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--carbon);
+  animation: aparecer 0.4s ease;
+}
+
+.cinta-descuento:hover {
+  transform: translateY(-2px);
 }
 
 .formulario-cobertura {

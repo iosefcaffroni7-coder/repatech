@@ -3,15 +3,29 @@
 // 2) El token se guarda en sessionStorage (se borra al cerrar la pestaña)
 //    y se manda en cada petición privada en el encabezado Authorization.
 // 3) Con el token se listan, actualizan (PUT) y borran (DELETE) solicitudes y reseñas.
+// 4) También se administran los servicios, los técnicos, la cobertura y el descuento
+//    (cada pestaña está en su propio componente: AdminServicios, AdminTecnicos, AdminCobertura).
 import { useEffect, useState } from 'react'
 import { pedirAPI } from '../api.js'
 import { estrellas } from '../datos.js'
 import BotonCarga from './BotonCarga.jsx'
 import Aviso from './Aviso.jsx'
 import TarjetaSolicitud from './TarjetaSolicitud.jsx'
+import AdminServicios from './AdminServicios.jsx'
+import AdminTecnicos from './AdminTecnicos.jsx'
+import AdminCobertura from './AdminCobertura.jsx'
 import './Admin.css'
 
-function Admin() {
+const pestanas = [
+  { id: 'solicitudes', nombre: 'Solicitudes de visita' },
+  { id: 'resenas', nombre: 'Reseñas' },
+  { id: 'servicios', nombre: 'Servicios' },
+  { id: 'tecnicos', nombre: 'Técnicos' },
+  { id: 'cobertura', nombre: 'Cobertura y descuentos' }
+]
+
+// catalogo y recargarCatalogo llegan por props desde App.
+function Admin({ catalogo, recargarCatalogo }) {
   const [token, setToken] = useState(sessionStorage.getItem('repatech_token') || '')
   const [usuario, setUsuario] = useState('')
   const [clave, setClave] = useState('')
@@ -148,19 +162,19 @@ function Admin() {
         <div className="dato"><strong>{pendientes}</strong><span>visitas pendientes</span></div>
         <div className="dato"><strong>{atendidas}</strong><span>visitas atendidas</span></div>
         <div className="dato"><strong>{resenas.length}</strong><span>reseñas publicadas</span></div>
+        <div className="dato"><strong>{catalogo ? catalogo.tecnicos.length : '-'}</strong><span>técnicos activos</span></div>
       </div>
 
       <div className="pestanas">
-        <button type="button" className={`chip ${pestana === 'solicitudes' ? 'activo' : ''}`} onClick={() => setPestana('solicitudes')}>
-          Solicitudes de visita
-        </button>
-        <button type="button" className={`chip ${pestana === 'resenas' ? 'activo' : ''}`} onClick={() => setPestana('resenas')}>
-          Reseñas
-        </button>
+        {pestanas.map(p => (
+          <button key={p.id} type="button" className={`chip ${pestana === p.id ? 'activo' : ''}`} onClick={() => setPestana(p.id)}>
+            {p.nombre}
+          </button>
+        ))}
       </div>
 
-      {cargando && <p className="estado-carga">Cargando datos...</p>}
-      {errorPanel && (
+      {cargando && ['solicitudes', 'resenas'].includes(pestana) && <p className="estado-carga">Cargando datos...</p>}
+      {errorPanel && ['solicitudes', 'resenas'].includes(pestana) && (
         <p className="estado-carga estado-error">
           {errorPanel} <button type="button" className="boton-texto" onClick={cargarTodo}>Reintentar</button>
         </p>
@@ -207,6 +221,22 @@ function Admin() {
             </article>
           ))}
         </div>
+      )}
+
+      {/* Pestañas del catálogo: necesitan que haya llegado el catálogo */}
+      {['servicios', 'tecnicos', 'cobertura'].includes(pestana) && !catalogo && (
+        <p className="estado-carga">
+          Cargando catálogo... <button type="button" className="boton-texto" onClick={recargarCatalogo}>Reintentar</button>
+        </p>
+      )}
+      {catalogo && pestana === 'servicios' && (
+        <AdminServicios servicios={catalogo.servicios} tecnicos={catalogo.tecnicos} pedirAPIAdmin={pedirAPIAdmin} alCambiar={recargarCatalogo} />
+      )}
+      {catalogo && pestana === 'tecnicos' && (
+        <AdminTecnicos servicios={catalogo.servicios} tecnicos={catalogo.tecnicos} pedirAPIAdmin={pedirAPIAdmin} alCambiar={recargarCatalogo} />
+      )}
+      {catalogo && pestana === 'cobertura' && (
+        <AdminCobertura cobertura={catalogo.cobertura} pedirAPIAdmin={pedirAPIAdmin} alCambiar={recargarCatalogo} />
       )}
     </section>
   )

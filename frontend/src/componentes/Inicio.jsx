@@ -1,11 +1,17 @@
 // Página de inicio con la marca y los botones principales.
 import hero from '../assets/hero.svg'
 
-function Inicio({ irA }) {
+function Inicio({ irA, cobertura }) {
+  const descuento = cobertura?.descuento
   return (
     <section className="hero">
       <div className="contenedor hero-caja">
         <div className="hero-texto">
+          {descuento?.activo && (
+            <button type="button" className="cinta-descuento" onClick={() => irA('cobertura')}>
+              <strong>{descuento.porcentaje}% menos</strong> en el traslado por {descuento.motivo}
+            </button>
+          )}
           <span className="etiqueta-mano">¡se descompuso otra vez!</span>
           <h1>Reparación técnica <span className="resaltado">a domicilio</span></h1>
           <p>

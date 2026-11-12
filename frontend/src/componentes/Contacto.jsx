@@ -1,13 +1,12 @@
 // Formulario "Pide tu visita": envía la solicitud al backend (POST /api/solicitudes).
 import { useState } from 'react'
 import { pedirAPI } from '../api.js'
-import { aparatos } from '../datos.js'
 import BotonCarga from './BotonCarga.jsx'
 import Aviso from './Aviso.jsx'
 
 const formularioVacio = { nombre: '', telefono: '', direccion: '', dispositivo: '', mensaje: '' }
 
-function Contacto() {
+function Contacto({ servicios }) {
   const [formulario, setFormulario] = useState(formularioVacio)
   const [enviando, setEnviando] = useState(false)
   const [aviso, setAviso] = useState({ texto: '', tipo: 'exito' })
@@ -74,7 +73,7 @@ function Contacto() {
             <label htmlFor="dispositivoContacto">Aparato a reparar</label>
             <select id="dispositivoContacto" name="dispositivo" required value={formulario.dispositivo} onChange={cambiarCampo}>
               <option value="" disabled>Elige uno</option>
-              {aparatos.map(aparato => <option key={aparato} value={aparato}>{aparato}</option>)}
+              {servicios.map(s => <option key={s._id} value={s.nombre}>{s.nombre}</option>)}
             </select>
           </div>
           <div className="campo campo-ancho">

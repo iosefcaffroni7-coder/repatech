@@ -3,6 +3,7 @@
 
 const express = require('express');
 const Solicitud = require('../modelos/Solicitud');
+const Servicio = require('../modelos/Servicio');
 const { responderError } = require('./errores');
 
 const router = express.Router();
@@ -11,7 +12,12 @@ router.post('/', async (req, res) => {
   try {
     const { nombre, telefono, direccion, dispositivo, mensaje } = req.body || {};
 
-    // Las validaciones están en el modelo (modelos/Solicitud.js).
+    // El aparato debe ser uno de los servicios que existen en la base de datos.
+    if (!(await Servicio.exists({ nombre: dispositivo }))) {
+      return res.status(400).json({ error: 'Elige qué aparato hay que reparar.' });
+    }
+
+    // Las demás validaciones están en el modelo (modelos/Solicitud.js).
     // Al teléfono se le quitan espacios y guiones antes de guardarlo.
     await Solicitud.create({
       nombre,

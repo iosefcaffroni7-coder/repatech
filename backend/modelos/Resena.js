@@ -1,13 +1,13 @@
 // Modelo de Mongoose para las reseñas de los técnicos.
 
 const mongoose = require('mongoose');
-const NEGOCIO = require('../negocio');
 
 const resenaSchema = new mongoose.Schema({
   tecnico: {
     type: String,
     required: [true, 'Elige un técnico de la lista.'],
-    enum: { values: NEGOCIO.tecnicos.map(t => t.nombre), message: 'Elige un técnico de la lista.' }
+    trim: true
+    // Que el técnico exista se revisa en la ruta (rutas/resenas.js).
   },
   nombre: {
     type: String,

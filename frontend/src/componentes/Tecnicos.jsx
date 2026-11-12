@@ -1,13 +1,14 @@
 // Lista de técnicos con filtro por tipo de aparato.
-import { servicios, tecnicos } from '../datos.js'
+// Los técnicos y los servicios llegan por props desde App (que los pidió a la API).
+import { fotosTecnico, especialidadDe } from '../datos.js'
 import TarjetaTecnico from './TarjetaTecnico.jsx'
 
-function Tecnicos({ filtro, setFiltro }) {
+function Tecnicos({ servicios, tecnicos, filtro, setFiltro }) {
   // filter: deja solo los técnicos que reparan el aparato elegido.
-  const visibles = tecnicos.filter(t => filtro === 'todos' || t.dispositivos.includes(filtro))
+  const visibles = tecnicos.filter(t => filtro === 'todos' || t.servicios.includes(filtro))
 
   // Botones del filtro: "Todos" + uno por cada servicio.
-  const opciones = [{ id: 'todos', nombre: 'Todos' }, ...servicios]
+  const opciones = [{ clave: 'todos', nombre: 'Todos' }, ...servicios]
 
   return (
     <section className="seccion seccion-alterna">
@@ -19,9 +20,9 @@ function Tecnicos({ filtro, setFiltro }) {
         <div className="filtros">
           {opciones.map(opcion => (
             <button
-              key={opcion.id}
-              className={`chip ${filtro === opcion.id ? 'activo' : ''}`}
-              onClick={() => setFiltro(opcion.id)}
+              key={opcion.clave}
+              className={`chip ${filtro === opcion.clave ? 'activo' : ''}`}
+              onClick={() => setFiltro(opcion.clave)}
             >
               {opcion.nombre}
             </button>
@@ -30,7 +31,12 @@ function Tecnicos({ filtro, setFiltro }) {
 
         <div className="rejilla-tecnicos">
           {visibles.map(tecnico => (
-            <TarjetaTecnico key={tecnico.nombre} {...tecnico} />
+            <TarjetaTecnico
+              key={tecnico._id}
+              {...tecnico}
+              foto={fotosTecnico[tecnico.foto]}
+              especialidad={especialidadDe(tecnico, servicios)}
+            />
           ))}
         </div>
 

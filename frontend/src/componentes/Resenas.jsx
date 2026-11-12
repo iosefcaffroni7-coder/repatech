@@ -1,14 +1,13 @@
 // Reseñas: se cargan del backend (GET) y se pueden publicar nuevas (POST).
 import { useEffect, useState } from 'react'
 import { pedirAPI } from '../api.js'
-import { tecnicos } from '../datos.js'
 import TarjetaResena from './TarjetaResena.jsx'
 import BotonCarga from './BotonCarga.jsx'
 import Aviso from './Aviso.jsx'
 
 const formularioVacio = { tecnico: '', nombre: '', comentario: '' }
 
-function Resenas() {
+function Resenas({ tecnicos }) {
   const [resenas, setResenas] = useState([])
   const [cargandoLista, setCargandoLista] = useState(true)
   const [errorLista, setErrorLista] = useState('')
@@ -97,7 +96,7 @@ function Resenas() {
               <label htmlFor="tecnico">Técnico</label>
               <select id="tecnico" name="tecnico" required value={formulario.tecnico} onChange={cambiarCampo}>
                 <option value="" disabled>Elige un técnico</option>
-                {tecnicos.map(t => <option key={t.nombre} value={t.nombre}>{t.nombre}</option>)}
+                {tecnicos.map(t => <option key={t._id} value={t.nombre}>{t.nombre}</option>)}
               </select>
             </div>
 

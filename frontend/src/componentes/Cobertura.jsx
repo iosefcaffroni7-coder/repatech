@@ -1,35 +1,43 @@
 // Calculadora de cobertura: con la distancia en km calcula el tiempo y el costo del traslado.
-// Se calcula en el navegador porque es una fórmula simple y no necesita datos del servidor.
+// Los valores (km máximos, km gratis, precios y descuento) llegan por props desde App,
+// que los pidió a la API. El administrador los cambia en el panel.
 import { useState } from 'react'
 import mapa from '../assets/mapa.svg'
-
-const KM_MAXIMO = 15
+import { calcularTraslado, pesos } from '../datos.js'
 
 // Devuelve un objeto con el resultado según los kilómetros.
-function calcularCobertura(km) {
+function calcularCobertura(km, c) {
   if (isNaN(km) || km < 0) {
     return { aviso: true, titulo: 'Revisa la distancia', lineas: ['Escribe un número de kilómetros, por ejemplo 4.5'] }
   }
-  if (km > KM_MAXIMO) {
+  if (km > c.kmMaximo) {
     return {
       aviso: true,
       titulo: 'Uy, todavía no llegamos hasta allá',
-      lineas: [`Por ahora cubrimos hasta ${KM_MAXIMO} km desde nuestro punto de partida. Escríbenos y vemos si podemos hacer una excepción.`]
+      lineas: [`Por ahora cubrimos hasta ${c.kmMaximo} km desde nuestro punto de partida. Escríbenos y vemos si podemos hacer una excepción.`]
     }
   }
-  const tiempo = Math.round(15 + km * 3)
-  const costo = km <= 2 ? 0 : Math.round(15000 + (km - 2) * 6000)
-  const textoCosto = costo === 0 ? 'Traslado sin costo' : `Costo de traslado aprox. $${costo.toLocaleString('es-CO')} COP`
-  return { aviso: false, titulo: '¡Sí llegamos!', lineas: [`Tiempo estimado de llegada: ${tiempo} minutos`, textoCosto] }
+  const { minutos, costo, conDescuento } = calcularTraslado(km, c)
+  const lineas = [`Tiempo estimado de llegada: ${minutos} minutos`]
+  if (costo === 0) {
+    lineas.push('Traslado sin costo')
+  } else if (conDescuento < costo) {
+    lineas.push(`Costo de traslado aprox. ${pesos(conDescuento)} COP (antes ${pesos(costo)})`)
+    lineas.push(`Incluye ${c.descuento.porcentaje}% de descuento por ${c.descuento.motivo}`)
+  } else {
+    lineas.push(`Costo de traslado aprox. ${pesos(costo)} COP`)
+  }
+  return { aviso: false, titulo: '¡Sí llegamos!', lineas }
 }
 
-function Cobertura() {
+function Cobertura({ cobertura }) {
   const [distancia, setDistancia] = useState('')
   const [resultado, setResultado] = useState(null)
+  const descuento = cobertura.descuento
 
   function calcular(evento) {
     evento.preventDefault()
-    setResultado(calcularCobertura(parseFloat(distancia)))
+    setResultado(calcularCobertura(parseFloat(distancia), cobertura))
   }
 
   return (
@@ -40,11 +48,17 @@ function Cobertura() {
           <h2>¿Llegamos hasta tu casa?</h2>
           <p className="descripcion-seccion">Pon qué tan lejos estás de nuestro punto de partida (en km) y te decimos el tiempo y el costo del traslado.</p>
 
+          {descuento?.activo && (
+            <p className="aviso-descuento">
+              <strong>{descuento.porcentaje}% de descuento</strong> en el traslado por {descuento.motivo}.
+            </p>
+          )}
+
           <form className="formulario-cobertura" onSubmit={calcular}>
             <div>
               <label htmlFor="distancia">Distancia aproximada en km</label>
               <input
-                type="number" id="distancia" min="0" max="50" step="0.5" placeholder="Ej. 4.5" required
+                type="number" id="distancia" min="0" max="100" step="0.5" placeholder="Ej. 4.5" required
                 value={distancia}
                 onChange={e => setDistancia(e.target.value)}
               />
@@ -61,6 +75,9 @@ function Cobertura() {
         </div>
         <div className="cobertura-imagen">
           <img src={mapa} alt="Mapa con radio de cobertura de RepaTech" />
+          {/* Las etiquetas van encima del mapa para que muestren los valores actuales */}
+          <span className="pildora-mapa pildora-maximo">hasta {cobertura.kmMaximo} km</span>
+          <span className="pildora-mapa pildora-gratis">{cobertura.kmGratis} km gratis</span>
         </div>
       </div>
     </section>

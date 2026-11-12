@@ -3,7 +3,6 @@
 // Si una regla no se cumple, Mongoose no guarda nada y devuelve el mensaje de error.
 
 const mongoose = require('mongoose');
-const NEGOCIO = require('../negocio');
 
 const solicitudSchema = new mongoose.Schema({
   nombre: {
@@ -28,7 +27,9 @@ const solicitudSchema = new mongoose.Schema({
   dispositivo: {
     type: String,
     required: [true, 'Elige qué aparato hay que reparar.'],
-    enum: { values: NEGOCIO.dispositivos, message: 'Elige qué aparato hay que reparar.' }
+    trim: true,
+    maxlength: [30, 'Elige qué aparato hay que reparar.']
+    // Que sea un servicio que existe se revisa en la ruta (rutas/solicitudes.js).
   },
   mensaje: {
     type: String,

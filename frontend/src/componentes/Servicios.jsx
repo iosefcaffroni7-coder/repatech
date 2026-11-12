@@ -1,8 +1,9 @@
 // Catálogo de servicios: una tarjeta por cada aparato que reparamos.
-import { servicios } from '../datos.js'
+// La lista de servicios llega por props desde App (que la pidió a la API).
+import { imagenesServicio } from '../datos.js'
 import TarjetaServicio from './TarjetaServicio.jsx'
 
-function Servicios({ elegirServicio }) {
+function Servicios({ servicios, elegirServicio }) {
   return (
     <section className="seccion">
       <div className="contenedor">
@@ -13,11 +14,11 @@ function Servicios({ elegirServicio }) {
         <div className="rejilla-servicios">
           {servicios.map(servicio => (
             <TarjetaServicio
-              key={servicio.id}
+              key={servicio._id}
               nombre={servicio.nombre}
-              imagen={servicio.imagen}
+              imagen={imagenesServicio[servicio.imagen]}
               descripcion={servicio.descripcion}
-              alElegir={() => elegirServicio(servicio.id)}
+              alElegir={() => elegirServicio(servicio.clave)}
             />
           ))}
         </div>

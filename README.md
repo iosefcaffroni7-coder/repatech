@@ -14,6 +14,7 @@ Proyecto final, Ruta Avanzada de Jóvenes creaTIvos: una aplicación web full st
 2. Pregúntale algo a Repi en la burbuja de la esquina (por ejemplo: "se me mojó el celular").
 3. Envía una solicitud en "Pide tu visita".
 4. Entra al panel (`/#admin`), búscala, márcala como atendida y prueba "Redactar mensaje con IA".
+5. En el panel agrega un servicio o un técnico, o activa un descuento en "Cobertura y descuentos", y mira cómo cambia la página.
 
 > La primera carga puede tardar unos 50 segundos si el servidor gratuito estaba dormido.
 
@@ -36,9 +37,9 @@ Proyecto final, Ruta Avanzada de Jóvenes creaTIvos: una aplicación web full st
 | 01 | App publicada | Frontend en GitHub Pages + backend en Render |
 | 02 | Repositorio GitHub | Este repositorio, con historial de commits |
 | 03 | Marca + home | Componente `Inicio.jsx`: logo, colores, tipografías e inicio propios |
-| 04 | Catálogo | `Servicios.jsx` y `Tecnicos.jsx`, con filtro por tipo de aparato |
+| 04 | Catálogo | `Servicios.jsx` y `Tecnicos.jsx`, con filtro por tipo de aparato. Los datos vienen de MongoDB |
 | 05 | Contacto real | `Contacto.jsx` guarda las solicitudes en MongoDB |
-| 06 | Admin con login | `Admin.jsx`: usuario y contraseña; ver, atender y borrar solicitudes y reseñas |
+| 06 | Admin con login | `Admin.jsx`: usuario y contraseña; ver, atender y borrar solicitudes y reseñas; agregar y quitar servicios y técnicos; editar la cobertura y activar descuentos en el traslado por ocasión |
 | 07 | IA personalizada | Chatbot **Repi** (`Chat.jsx`), que conoce servicios, técnicos, cobertura y tono de marca, y un generador de mensajes de WhatsApp en el panel |
 
 ## Arquitectura
@@ -69,7 +70,7 @@ repatech/
 │       ├── main.jsx                → arranca React
 │       ├── App.jsx                 → decide qué sección se muestra
 │       ├── api.js                  → URL del backend y función pedirAPI
-│       ├── datos.js                → catálogo: servicios y técnicos
+│       ├── datos.js                → ilustraciones y cálculos del catálogo (los datos vienen de la API)
 │       ├── index.css               → estilos, responsive y animaciones
 │       ├── assets/                 → logo e ilustraciones SVG
 │       └── componentes/
@@ -82,16 +83,25 @@ repatech/
 │           ├── Contacto.jsx        → formulario "Pide tu visita"
 │           ├── Chat.jsx            → chatbot Repi
 │           ├── Admin.jsx + TarjetaSolicitud.jsx + Admin.css
+│           ├── AdminServicios.jsx  → agregar y quitar servicios
+│           ├── AdminTecnicos.jsx   → agregar y quitar técnicos
+│           ├── AdminCobertura.jsx  → editar cobertura y descuentos del traslado
+│           ├── SelectorImagen.jsx  → elegir ilustración (reutilizable)
+│           ├── EsperandoCatalogo.jsx → mensaje mientras carga el catálogo
 │           ├── BotonCarga.jsx      → botón reutilizable con estado de carga
 │           ├── Aviso.jsx           → mensajes de éxito o error
 │           └── Pie.jsx             → pie de página con créditos
 ├── backend/                        → Node + Express + Mongoose (se publica en Render)
 │   ├── index.js                    → conecta MongoDB, configura Express y las rutas
-│   ├── negocio.js                  → datos del negocio para la IA
+│   ├── negocio.js                  → datos fijos del negocio y datos iniciales
 │   ├── modelos/
 │   │   ├── Solicitud.js            → esquema de Mongoose de las solicitudes
-│   │   └── Resena.js               → esquema de Mongoose de las reseñas
+│   │   ├── Resena.js               → esquema de Mongoose de las reseñas
+│   │   ├── Servicio.js             → servicios (aparatos que reparamos)
+│   │   ├── Tecnico.js              → técnicos
+│   │   └── Cobertura.js            → cobertura y descuento del traslado
 │   ├── rutas/
+│   │   ├── catalogo.js             → GET del catálogo (servicios, técnicos y cobertura)
 │   │   ├── solicitudes.js          → POST del formulario de contacto
 │   │   ├── resenas.js              → GET y POST de reseñas
 │   │   ├── chat.js                 → POST del chatbot
@@ -108,6 +118,7 @@ repatech/
 | Método | Ruta | Para qué | ¿Requiere login? |
 |--------|------|----------|-----------|
 | GET | `/api/salud` | Saber si el servidor está despierto | No |
+| GET | `/api/catalogo` | Servicios, técnicos y cobertura (con el descuento activo) | No |
 | POST | `/api/solicitudes` | Guardar una solicitud de visita | No |
 | GET | `/api/resenas` | Listar reseñas | No |
 | POST | `/api/resenas` | Publicar una reseña | No |
@@ -118,6 +129,11 @@ repatech/
 | DELETE | `/api/admin/solicitudes/:id` | Borrar una solicitud | Sí |
 | POST | `/api/admin/solicitudes/:id/mensaje-ia` | La IA redacta un WhatsApp para el cliente | Sí |
 | DELETE | `/api/admin/resenas/:id` | Borrar una reseña | Sí |
+| POST | `/api/admin/servicios` | Agregar un servicio | Sí |
+| DELETE | `/api/admin/servicios/:id` | Quitar un servicio | Sí |
+| POST | `/api/admin/tecnicos` | Agregar un técnico | Sí |
+| DELETE | `/api/admin/tecnicos/:id` | Quitar un técnico | Sí |
+| PUT | `/api/admin/cobertura` | Editar la cobertura y el descuento del traslado | Sí |
 
 Las rutas que requieren login necesitan el encabezado `Authorization: Bearer <token>`.
 
@@ -161,6 +177,7 @@ Sin `GEMINI_API_KEY` el chatbot igual responde con respuestas básicas; con la c
 - **Una sección a la vez:** `App.jsx` guarda en el estado qué sección se ve; al cambiar, la nueva aparece con una animación CSS.
 - **MongoDB + Mongoose:** los modelos (`modelos/`) definen los campos y las reglas (obligatorio, largo mínimo, valores permitidos). Si un dato no cumple, Mongoose no lo guarda y la API devuelve un mensaje claro.
 - **CRUD con los métodos HTTP:** GET para leer, POST para crear, PUT para actualizar y DELETE para borrar.
+- **Catálogo en la base de datos:** servicios, técnicos y cobertura están en MongoDB. La página los pide una vez con `GET /api/catalogo` y el administrador los cambia desde el panel. La primera vez se llenan con los datos de `negocio.js`. La IA también los lee de MongoDB, así Repi conoce los técnicos nuevos y el descuento activo.
 - **Login con token:** el backend entrega un token aleatorio al iniciar sesión; el panel lo guarda en `sessionStorage` y lo envía en cada petición privada.
 - **IA personalizada:** `ia/asistente.js` le da a Gemini la información real del negocio (técnicos, servicios, fórmula de cobertura, horario) y el tono de marca. Si no hay clave, hay respuestas de respaldo para que la demo nunca falle.
 - **UX:** responsive en celular y computador, animaciones, botones con estado de carga (`BotonCarga`), mensajes de error claros (`Aviso`) y aviso si el servidor gratuito está "despertando".
@@ -169,6 +186,7 @@ Sin `GEMINI_API_KEY` el chatbot igual responde con respuestas básicas; con la c
 
 - El servidor gratuito de Render se "duerme" tras 15 minutos sin uso; la primera petición puede tardar unos 50 segundos.
 - Un solo usuario administrador; se podrían agregar más usuarios con contraseñas cifradas guardadas en MongoDB.
+- Los técnicos y servicios se agregan o se quitan, pero todavía no se editan; las ilustraciones se eligen de una lista fija.
 
 ---
 

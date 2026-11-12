@@ -9,16 +9,39 @@
 //    WhatsApp listo para enviarle al cliente que pidió una visita.
 
 const NEGOCIO = require('../negocio');
+const Servicio = require('../modelos/Servicio');
+const Tecnico = require('../modelos/Tecnico');
+const Cobertura = require('../modelos/Cobertura');
 
 const URL_GEMINI = 'https://generativelanguage.googleapis.com/v1beta/models';
 
+// Lee de MongoDB los servicios, técnicos y la cobertura actuales.
+// Así, si el administrador agrega un técnico o un descuento en el panel, la IA ya lo sabe.
+async function cargarCatalogo() {
+  const [servicios, tecnicos, cobertura] = await Promise.all([
+    Servicio.find(), Tecnico.find(), Cobertura.findOne()
+  ]);
+  return { servicios, tecnicos, cobertura: cobertura || NEGOCIO.coberturaInicial };
+}
+
+// Nombres de los servicios de un técnico: ["celular", "tablet"] -> "Celulares, Tablets"
+function especialidad(tecnico, servicios) {
+  return servicios.filter(s => tecnico.servicios.includes(s.clave)).map(s => s.nombre).join(', ') || 'varios aparatos';
+}
+
+// Texto del descuento activo, o vacío si el precio está normal.
+function textoDescuento(cobertura) {
+  const d = cobertura.descuento;
+  return d && d.activo ? `${d.porcentaje}% de descuento en el traslado por ${d.motivo}` : '';
+}
+
 // "Personalidad" y conocimiento del negocio que recibe la IA en cada consulta.
-function instruccionesDelNegocio() {
-  const c = NEGOCIO.cobertura;
-  const servicios = NEGOCIO.servicios.map(s => `- ${s.aparato}: ${s.problemas}`).join('\n');
-  const tecnicos = NEGOCIO.tecnicos
-    .map(t => `- ${t.nombre}: ${t.especialidad}, zona ${t.zona}, ${t.experiencia} años de experiencia, ${t.calificacion} estrellas`)
+function instruccionesDelNegocio({ servicios, tecnicos, cobertura: c }) {
+  const listaServicios = servicios.map(s => `- ${s.nombre}: ${s.descripcion}`).join('\n');
+  const listaTecnicos = tecnicos
+    .map(t => `- ${t.nombre}: ${especialidad(t, servicios)}, zona ${t.zona}, ${t.experiencia} años de experiencia, ${t.calificacion} estrellas`)
     .join('\n');
+  const descuento = textoDescuento(c);
 
   return `Eres "Repi", el asistente virtual de ${NEGOCIO.nombre}. ${NEGOCIO.descripcion}
 
@@ -26,21 +49,23 @@ TONO DE MARCA: cercano, alegre y claro, como un vecino que sabe de tecnología. 
 usas español de Colombia, frases cortas y sin emojis. Respondes en 2 a 4 frases.
 
 SERVICIOS (lo que reparamos):
-${servicios}
+${listaServicios}
 
 TÉCNICOS:
-${tecnicos}
+${listaTecnicos}
 
 COBERTURA Y TRASLADO:
 - Llegamos hasta ${c.kmMaximo} km desde nuestro punto de partida.
 - Hasta ${c.kmGratis} km el traslado es gratis. Después cuesta $${c.costoBase.toLocaleString('es-CO')} COP más $${c.costoPorKmExtra.toLocaleString('es-CO')} COP por cada km extra.
 - Tiempo de llegada aproximado: ${c.minutosBase} minutos más ${c.minutosPorKm} minutos por km.
+${descuento ? `- PROMOCIÓN ACTIVA: ${descuento}. Menciónala cuando pregunten por precios o por el traslado.` : '- No hay promociones activas en este momento: no inventes descuentos.'}
 
 HORARIO: ${NEGOCIO.horario}.
 CONTACTO: WhatsApp ${NEGOCIO.whatsapp}, correo ${NEGOCIO.correo}.
 
 REGLAS:
 - Si el cliente cuenta una falla, da 1 o 2 posibles causas sencillas y recomienda al técnico indicado por nombre.
+- Solo reparamos los servicios de la lista. Si piden otro aparato, dilo con amabilidad.
 - No inventes precios de reparación: el técnico da el precio exacto después de revisar el aparato.
 - Para agendar, invita a llenar el formulario "Pide tu visita" de la página.
 - Si preguntan algo que no tiene que ver con reparación de aparatos o con ${NEGOCIO.nombre}, responde amablemente que solo puedes ayudar con eso.`;
@@ -50,7 +75,7 @@ REGLAS:
 const MODELO_RESPALDO = 'gemini-3.5-flash-lite';
 
 // Llama a un modelo de Gemini con un historial de mensajes y devuelve el texto.
-async function llamarModelo(modelo, contenidos) {
+async function llamarModelo(modelo, contenidos, instrucciones) {
   const respuesta = await fetch(`${URL_GEMINI}/${modelo}:generateContent`, {
     method: 'POST',
     headers: {
@@ -58,7 +83,7 @@ async function llamarModelo(modelo, contenidos) {
       'x-goog-api-key': process.env.GEMINI_API_KEY
     },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: instruccionesDelNegocio() }] },
+      systemInstruction: { parts: [{ text: instrucciones }] },
       contents: contenidos,
       generationConfig: { temperature: 0.7 }
     }),
@@ -78,12 +103,12 @@ async function llamarModelo(modelo, contenidos) {
 // Prueba primero con el modelo principal y, si falla (por ejemplo
 // "mucha demanda"), con el de respaldo. Si los dos fallan, lanza el error
 // para que se use la respuesta sin IA.
-async function preguntarAGemini(contenidos) {
+async function preguntarAGemini(contenidos, instrucciones) {
   const modelos = [process.env.GEMINI_MODELO || 'gemini-3.8-flash', MODELO_RESPALDO];
   let ultimoError;
   for (const modelo of modelos) {
     try {
-      return await llamarModelo(modelo, contenidos);
+      return await llamarModelo(modelo, contenidos, instrucciones);
     } catch (error) {
       console.error('Error de IA:', error.message);
       ultimoError = error;
@@ -94,34 +119,35 @@ async function preguntarAGemini(contenidos) {
 
 // Plan B sin IA: si no hay clave o la IA no responde, el chat igual responde algo útil
 // buscando palabras clave. Así la página nunca queda "muda" en una demostración.
-function respuestaSinIA(pregunta) {
+function respuestaSinIA(pregunta, catalogo) {
   const p = pregunta.toLowerCase();
-  const tecnicoPara = palabra => NEGOCIO.tecnicos.find(t => t.especialidad.toLowerCase().includes(palabra));
+  const { servicios, tecnicos, cobertura } = catalogo;
+  // Busca el primer técnico que repare alguno de esos servicios.
+  const tecnicoPara = (...claves) => tecnicos.find(t => t.servicios.some(c => claves.includes(c)));
+  const recomendar = (tecnico, aparato) => tecnico
+    ? `Para ${aparato} te recomiendo a ${tecnico.nombre}. Llena el formulario "Pide tu visita" y te llamamos para confirmar la hora.`
+    : `Cuéntanos qué le pasa a tu aparato en el formulario "Pide tu visita" y te llamamos.`;
 
-  if (/celular|teléfono|telefono|iphone|android/.test(p)) {
-    return `Para celulares te recomiendo a ${tecnicoPara('celulares').nombre}, es nuestro experto. Llena el formulario "Pide tu visita" y te llamamos para confirmar la hora.`;
+  if (/celular|teléfono|telefono|iphone|android/.test(p)) return recomendar(tecnicoPara('celular'), 'celulares');
+  if (/laptop|portátil|portatil|computador|pc/.test(p)) return recomendar(tecnicoPara('laptop', 'pc'), 'computadores');
+  if (/consola|play|xbox|nintendo|tv|televisor|pantalla/.test(p)) return recomendar(tecnicoPara('consola', 'tv'), 'consolas y pantallas');
+  if (/precio|cuesta|cobran|valor|cuánto|cuanto|traslado|descuento|promo/.test(p)) {
+    const descuento = textoDescuento(cobertura);
+    return `El traslado es gratis hasta ${cobertura.kmGratis} km.${descuento ? ` Además, ahora tenemos ${descuento}.` : ''} ` +
+      'El precio de la reparación te lo da el técnico después de revisar tu aparato, sin compromiso.';
   }
-  if (/laptop|portátil|portatil|computador|pc/.test(p)) {
-    return `Para computadores te recomiendo a ${tecnicoPara('laptops').nombre}. Cuéntanos la falla en el formulario "Pide tu visita" y te contactamos.`;
-  }
-  if (/consola|play|xbox|nintendo|tv|televisor|pantalla/.test(p)) {
-    return `Para consolas y pantallas el indicado es ${tecnicoPara('consolas').nombre}. Pide tu visita en el formulario y te llamamos.`;
-  }
-  if (/precio|cuesta|cobran|valor|cuánto|cuanto/.test(p)) {
-    return `El traslado es gratis hasta ${NEGOCIO.cobertura.kmGratis} km. El precio de la reparación te lo da el técnico después de revisar tu aparato, sin compromiso.`;
-  }
-  if (/horario|hora|abren|domingo/.test(p)) {
-    return `Atendemos ${NEGOCIO.horario}.`;
-  }
-  return `Soy Repi, el asistente de RepaTech. Cuéntame qué aparato se te dañó y qué le pasa, y te digo qué técnico te puede ayudar.`;
+  if (/horario|hora|abren|domingo/.test(p)) return `Atendemos ${NEGOCIO.horario}.`;
+  if (/qué reparan|que reparan|servicios/.test(p)) return `Reparamos: ${servicios.map(s => s.nombre).join(', ')}.`;
+  return 'Soy Repi, el asistente de RepaTech. Cuéntame qué aparato se te dañó y qué le pasa, y te digo qué técnico te puede ayudar.';
 }
 
 // historial: [{ rol: 'usuario' | 'asistente', texto: '...' }, ...]
 async function responderChat(historial) {
   const ultimaPregunta = historial[historial.length - 1].texto;
+  const catalogo = await cargarCatalogo();
 
   if (!process.env.GEMINI_API_KEY) {
-    return respuestaSinIA(ultimaPregunta);
+    return respuestaSinIA(ultimaPregunta, catalogo);
   }
 
   // Gemini usa los roles "user" y "model". Solo se envían los últimos 10
@@ -137,10 +163,10 @@ async function responderChat(historial) {
   }));
 
   try {
-    return await preguntarAGemini(contenidos);
+    return await preguntarAGemini(contenidos, instruccionesDelNegocio(catalogo));
   } catch {
     // Si la IA no responde, el cliente igual recibe una respuesta útil.
-    return respuestaSinIA(ultimaPregunta);
+    return respuestaSinIA(ultimaPregunta, catalogo);
   }
 }
 
@@ -153,16 +179,18 @@ para ese aparato y pregúntale qué día y hora le queda bien. Firma como "Equip
 Devuelve solo el mensaje, sin explicaciones.`;
 
   // Mensaje de plantilla, por si no hay IA disponible.
-  const tecnico = NEGOCIO.tecnicos.find(t => t.especialidad.toLowerCase().includes(solicitud.dispositivo.toLowerCase().split(' ')[0])) || NEGOCIO.tecnicos[0];
-  const aparato = solicitud.dispositivo.toLowerCase().replace('pc', 'PC').replace('tv', 'TV');
-  const plantilla = `¡Hola ${solicitud.nombre}! Recibimos tu solicitud para reparar tu ${aparato}. ` +
-    `${tecnico.nombre} es quien mejor te puede ayudar con ese caso. ¿Qué día y a qué hora te queda bien la visita?` +
+  const catalogo = await cargarCatalogo();
+  const servicio = catalogo.servicios.find(s => s.nombre === solicitud.dispositivo);
+  const tecnico = (servicio && catalogo.tecnicos.find(t => t.servicios.includes(servicio.clave))) || catalogo.tecnicos[0];
+  const quien = tecnico ? `${tecnico.nombre} es quien mejor te puede ayudar con ese caso.` : 'Uno de nuestros técnicos te va a ayudar.';
+  const plantilla = `¡Hola ${solicitud.nombre}! Recibimos tu solicitud para reparar tu equipo (${solicitud.dispositivo}). ` +
+    `${quien} ¿Qué día y a qué hora te queda bien la visita?` +
     `\n— Equipo RepaTech`;
 
   if (!process.env.GEMINI_API_KEY) return plantilla;
 
   try {
-    return await preguntarAGemini([{ role: 'user', parts: [{ text: pedido }] }]);
+    return await preguntarAGemini([{ role: 'user', parts: [{ text: pedido }] }], instruccionesDelNegocio(catalogo));
   } catch {
     return plantilla;
   }

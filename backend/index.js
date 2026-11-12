@@ -14,6 +14,9 @@ try {
 const express = require('express');
 const mongoose = require('mongoose');
 const Resena = require('./modelos/Resena');
+const Servicio = require('./modelos/Servicio');
+const Tecnico = require('./modelos/Tecnico');
+const Cobertura = require('./modelos/Cobertura');
 const NEGOCIO = require('./negocio');
 
 const app = express();
@@ -38,6 +41,7 @@ app.get('/api/salud', (req, res) => {
 });
 
 // Rutas de la API, cada una en su propio archivo.
+app.use('/api/catalogo', require('./rutas/catalogo'));
 app.use('/api/solicitudes', require('./rutas/solicitudes'));
 app.use('/api/resenas', require('./rutas/resenas'));
 app.use('/api/chat', require('./rutas/chat'));
@@ -48,10 +52,22 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Esa ruta no existe en la API' });
 });
 
-// Si la base de datos está vacía, se guardan las reseñas de ejemplo.
-async function crearResenasIniciales() {
-  const cantidad = await Resena.countDocuments();
-  if (cantidad === 0) {
+// La primera vez (base de datos vacía) se guardan los servicios, técnicos,
+// cobertura y reseñas de ejemplo de negocio.js. Después se manejan desde el panel.
+async function crearDatosIniciales() {
+  if (await Servicio.countDocuments() === 0) {
+    await Servicio.insertMany(NEGOCIO.serviciosIniciales);
+    console.log('Servicios iniciales guardados');
+  }
+  if (await Tecnico.countDocuments() === 0) {
+    await Tecnico.insertMany(NEGOCIO.tecnicosIniciales);
+    console.log('Técnicos iniciales guardados');
+  }
+  if (await Cobertura.countDocuments() === 0) {
+    await Cobertura.create(NEGOCIO.coberturaInicial);
+    console.log('Cobertura inicial guardada');
+  }
+  if (await Resena.countDocuments() === 0) {
     await Resena.insertMany(NEGOCIO.resenasIniciales);
     console.log('Reseñas de ejemplo guardadas');
   }
@@ -61,7 +77,7 @@ async function crearResenasIniciales() {
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/repatech')
   .then(async () => {
     console.log('Base de datos conectada');
-    await crearResenasIniciales();
+    await crearDatosIniciales();
     app.listen(PUERTO, () => {
       console.log(`Servidor ejecutándose en http://localhost:${PUERTO}`);
     });
