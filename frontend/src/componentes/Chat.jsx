@@ -4,7 +4,7 @@
 // y le explica a la IA cómo es el negocio.
 import { useEffect, useRef, useState } from 'react'
 import { pedirAPI } from '../api.js'
-import logo from '../assets/logo.svg'
+import repi from '../assets/repi.svg'
 
 const saludo = { rol: 'asistente', texto: '¡Hola! Soy Repi. Cuéntame qué aparato se te dañó y te digo qué técnico te puede ayudar.' }
 const sugerencias = ['Se me mojó el celular', '¿Cuánto cobran el traslado?', '¿Quién arregla consolas?']
@@ -56,7 +56,7 @@ function Chat() {
   if (!abierto) {
     return (
       <button className="chat-burbuja" aria-label="Abrir asistente de RepaTech" onClick={() => setAbierto(true)}>
-        <img src={logo} alt="" width="30" />
+        <img src={repi} alt="" width="36" />
         <span>¿Te ayudo?</span>
       </button>
     )
@@ -65,7 +65,8 @@ function Chat() {
   return (
     <section className="chat-ventana" aria-label="Asistente de RepaTech">
       <header className="chat-cabecera">
-        <div>
+        <img src={repi} alt="" className="chat-avatar" />
+        <div className="chat-titulo">
           <strong>Repi</strong>
           <span>Asistente con IA de RepaTech</span>
         </div>

@@ -23,7 +23,7 @@ function Inicio({ irA }) {
           </div>
         </div>
         <div className="hero-imagen">
-          <img src={hero} alt="Técnico llegando a reparar a una casa" />
+          <img src={hero} alt="Técnico de RepaTech con su caja de herramientas llegando a una casa" />
         </div>
       </div>
     </section>
